@@ -60,12 +60,6 @@ namespace avro_helper_master
                     }
                     return avroList.ToArray();
                 case MapSchema mapSchema:
-                    //var avroMap = new Dictionary<string, object>();
-                    //foreach (DictionaryEntry value in (IDictionary)fieldValue)
-                    //{
-                    //    avroMap.Add(value.Key.ToString(), ProcessField(mapSchema.ValueSchema, value.Value));
-                    //}
-                    //return avroMap;
                     object avroMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(mapSchema.KeySchema.RuntimeType, mapSchema.ValueSchema.RuntimeType));
                     foreach (DictionaryEntry value in (IDictionary)fieldValue)
                     {
