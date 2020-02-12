@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avro-helper-master", "avro-helper-master\avro-helper-master.csproj", "{33385085-A035-4D0A-87CA-F1C1F51BB78B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avro-helper-master-test", "..\avro-helper-master-test\avro-helper-master-test.csproj", "{76590E94-CF90-4FB1-ABB9-AB3D8666B987}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33385085-A035-4D0A-87CA-F1C1F51BB78B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33385085-A035-4D0A-87CA-F1C1F51BB78B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33385085-A035-4D0A-87CA-F1C1F51BB78B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33385085-A035-4D0A-87CA-F1C1F51BB78B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76590E94-CF90-4FB1-ABB9-AB3D8666B987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76590E94-CF90-4FB1-ABB9-AB3D8666B987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76590E94-CF90-4FB1-ABB9-AB3D8666B987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76590E94-CF90-4FB1-ABB9-AB3D8666B987}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE4AA73C-2416-4124-B2B8-2640EF13697D}
+	EndGlobalSection
+EndGlobal
