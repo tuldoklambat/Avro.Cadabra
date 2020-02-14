@@ -1,49 +1,106 @@
-﻿using Microsoft.Hadoop.Avro;
+﻿// Copyright (c) Joseph De Guzman (tuldoklambat@gmail.com)
+// All rights reserved.
+//
+// THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+// WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+// MERCHANTABLITY OR NON-INFRINGEMENT.
+
+using Microsoft.Hadoop.Avro;
 using Microsoft.Hadoop.Avro.Schema;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 
-namespace avro_helper_master
+namespace Gooseman.Avro.Utility
 {
     /// <summary>
     /// Helper class to convert class to and from Avro
     /// </summary>
-    public static class AvroHelper
+    public static class AvroCadabra
     {
-        public static AvroRecord ToAvroRecord(this object obj, RecordSchema schema)
+        /// <summary>
+        /// Converts an object to an AvroRecord based on the specified schema
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="schema">The schema to follow when converting the object</param>
+        /// <returns></returns>
+        public static AvroRecord ToAvroRecord(this object obj, string schema)
         {
-            if (schema == null || obj.GetType().FullName != schema.FullName)
+            return _ToAvroRecord(obj, (RecordSchema)new JsonSchemaBuilder().BuildSchema(schema));
+        }
+
+        /// <summary>
+        /// Converts an AvroRecord to a specified instance based on a schema or the type information of T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="avroRecord"></param>
+        /// <param name="schema">The schema to follow when converting from an AvroRecord. If not specified the T type information will be used.</param>
+        /// <returns></returns>
+        public static T FromAvroRecord<T>(this AvroRecord avroRecord, string schema = null) where T : class, new()
+        {
+            return schema == null
+                ? _FromAvroRecord<T>(avroRecord)
+                : _FromAvroRecord<T>(avroRecord, (RecordSchema)new JsonSchemaBuilder().BuildSchema(schema));
+        }
+
+        #region Private Methods
+
+        private static AvroRecord _ToAvroRecord(object obj, RecordSchema schema)
+        {
+            if (schema == null || !obj.GetType().FullName.StartsWith(schema.FullName))
+            {
                 return null;
+            }
 
             var avroRecord = new AvroRecord(schema);
-
             foreach (var field in schema.Fields)
             {
                 var value = obj.GetValue(field) ?? field.DefaultValue;
-                avroRecord[field.Position] = ProcessField(field.TypeSchema, value);
+                avroRecord[field.Position] = ConvertValueToAvroType(field.TypeSchema, value);
             }
 
             return avroRecord;
         }
 
-        public static T FromAvroRecord<T>(this AvroRecord avroRecord) where T : class, new()
+        private static T _FromAvroRecord<T>(AvroRecord avroRecord, RecordSchema schema = null) where T : class, new()
         {
+            if (schema == null)
+            {
+                schema = avroRecord.Schema;
+            }
+
             var instance = new T();
-            foreach (var field in avroRecord.Schema.Fields) 
+            foreach (var field in schema.Fields)
             {
                 var property = instance.GetType().GetProperty(field.Name);
-                var value = ConvertValueToDotNetType(field.TypeSchema, typeof(T).Assembly.GetTypes(), property.PropertyType, avroRecord[field.Name]);
-                property.SetValue(instance, value);
+
+                // check if the field also exists in the previous schema used in the 
+                // conversion of the T instance to an AvroRecord otherwise ignore
+                if (avroRecord.Schema.TryGetField(field.Name, out RecordField matchField))
+                {
+                    var value = avroRecord[field.Name] ?? field.DefaultValue;
+                    value = ConvertValueToDotNetType(field.TypeSchema, typeof(T).Assembly.GetTypes(), property.PropertyType, value);
+                    property.SetValue(instance, value);
+                }
             }
             return instance;
         }
 
         private static object ConvertValueToDotNetType(TypeSchema typeSchema, IEnumerable<Type> typeCache, Type type, object fieldValue)
         {
+            if (fieldValue == null)
+            {
+                return null;
+            }
+
+            if (typeof(DateTime) == type)
+            {
+                return new DateTime((long)fieldValue);
+            }
+
             switch (typeSchema)
             {
                 case BooleanSchema boolSchema:
@@ -52,29 +109,37 @@ namespace avro_helper_master
                 case DoubleSchema doubleSchema:
                 case FloatSchema floatSchema:
                 case StringSchema stringSchema:
-                    return fieldValue;
+                    break;
+
                 case EnumSchema enumSchema:
                     return Enum.Parse(type, ((AvroEnum)fieldValue).Value, true);
+
                 case RecordSchema recordSchema:
                     var targetType = typeCache.Where(t => t.FullName == recordSchema.FullName).FirstOrDefault();
-                    return typeof(AvroHelper)
-                        .GetMethod("FromAvroRecord")
+                    return typeof(AvroCadabra)
+                        .GetMethod("_FromAvroRecord", BindingFlags.Static | BindingFlags.NonPublic)
                         .MakeGenericMethod(targetType)
-                        .Invoke(null, new[] { fieldValue });
+                        .Invoke(null, new[] { fieldValue, typeSchema });
+
                 case ArraySchema arraySchema:
-                    dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(type.IsArray ? type.GetElementType() : type.GenericTypeArguments[0]));
+                    type = type.IsArray ? type.GetElementType() : type.GenericTypeArguments[0];
+                    dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
                     foreach (var value in (IEnumerable)fieldValue)
                     {
                         avroList.GetType().GetMethod("Add").Invoke(avroList, new[] { ConvertValueToDotNetType(arraySchema.ItemSchema, typeCache, type, value) });
                     }
                     return avroList.ToArray();
+
                 case MapSchema mapSchema:
                     var avroMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(type.GenericTypeArguments[0], type.GenericTypeArguments[1]));
                     foreach (DictionaryEntry value in (IDictionary)fieldValue)
                     {
-                        avroMap.GetType().GetMethod("Add").Invoke(avroMap, new[] { value.Key.ToString(), ConvertValueToDotNetType(mapSchema.ValueSchema, typeCache, type, value.Value) });
+                        avroMap.GetType()
+                            .GetMethod("Add")
+                            .Invoke(avroMap, new[] { value.Key.ToString(), ConvertValueToDotNetType(mapSchema.ValueSchema, typeCache, type.GenericTypeArguments[1], value.Value) });
                     }
                     return avroMap;
+
                 case UnionSchema unionSchema:
                     if (unionSchema.Schemas.Any(s => s.GetType() == typeof(RecordSchema)))
                     {
@@ -90,19 +155,15 @@ namespace avro_helper_master
                         return ConvertValueToDotNetType(unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault(), typeCache, type, fieldValue);
                     }
                     break;
+
                 case NullSchema nullSchema:
-                    break;
+                    return null;
             }
 
-            return null;
+            return fieldValue;
         }
 
-        private static object GetValue(this object obj, RecordField field)
-        {
-            return obj.GetType().GetProperty(field.Name).GetValue(obj);
-        }
-
-        private static object ProcessField(TypeSchema typeSchema, object fieldValue)
+        private static object ConvertValueToAvroType(TypeSchema typeSchema, object fieldValue)
         {
             if (fieldValue == null)
                 return null;
@@ -112,7 +173,7 @@ namespace avro_helper_master
                 return Convert.ToDateTime(fieldValue).Ticks;
             }
 
-            switch(typeSchema)
+            switch (typeSchema)
             {
                 case BooleanSchema boolSchema:
                 case IntSchema intSchema:
@@ -120,67 +181,62 @@ namespace avro_helper_master
                 case DoubleSchema doubleSchema:
                 case FloatSchema floatSchema:
                 case StringSchema stringSchema:
-                    return fieldValue;
+                    break;
+
                 case EnumSchema enumSchema:
                     return new AvroEnum(enumSchema) { Value = fieldValue.ToString() };
+
                 case RecordSchema recordSchema:
-                    return fieldValue.ToAvroRecord(recordSchema);
+                    return _ToAvroRecord(fieldValue, recordSchema);
+
                 case ArraySchema arraySchema:
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(arraySchema.ItemSchema.RuntimeType));
                     foreach (var value in (IEnumerable)fieldValue)
                     {
-                        avroList.GetType().GetMethod("Add").Invoke(avroList, new[] { ProcessField(arraySchema.ItemSchema, value) });
+                        avroList.GetType()
+                            .GetMethod("Add")
+                            .Invoke(avroList, new[] { ConvertValueToAvroType(arraySchema.ItemSchema, value) });
                     }
                     return avroList.ToArray();
+
                 case MapSchema mapSchema:
                     var avroMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(mapSchema.KeySchema.RuntimeType, mapSchema.ValueSchema.RuntimeType));
                     foreach (DictionaryEntry value in (IDictionary)fieldValue)
                     {
-                        avroMap.GetType().GetMethod("Add").Invoke(avroMap, new[] { value.Key.ToString(), ProcessField(mapSchema.ValueSchema, value.Value) });
+                        avroMap.GetType()
+                            .GetMethod("Add")
+                            .Invoke(avroMap, new[] { value.Key.ToString(), ConvertValueToAvroType(mapSchema.ValueSchema, value.Value) });
                     }
                     return avroMap;
+
                 case UnionSchema unionSchema:
                     if (unionSchema.Schemas.Any(s => s.GetType() == typeof(RecordSchema)))
                     {
                         var recordSchema = unionSchema.Schemas.OfType<RecordSchema>().Where(s => s.FullName == fieldValue.GetType().FullName).FirstOrDefault();
-                        return ProcessField(recordSchema, fieldValue);
+                        return ConvertValueToAvroType(recordSchema, fieldValue);
                     }
                     if (unionSchema.Schemas.Any(s => s.GetType() == typeof(ArraySchema)))
                     {
-                        return ProcessField(unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault(), fieldValue);
+                        return ConvertValueToAvroType(unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault(), fieldValue);
                     }
                     if (unionSchema.Schemas.Any(s => s.GetType() == typeof(MapSchema)))
                     {
-                        return ProcessField(unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault(), fieldValue);
+                        return ConvertValueToAvroType(unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault(), fieldValue);
                     }
                     break;
+
                 case NullSchema nullSchema:
-                    break;
+                    return null;
             }
 
-            return null;
+            return fieldValue;
         }
 
-        private static IEnumerable<Type> GetAllKnownTypes(Type type, HashSet<Type> knownTypes = null)
+        private static object GetValue(this object obj, RecordField field)
         {
-            if (knownTypes == null)
-            {
-                knownTypes = new HashSet<Type>();
-            }
-
-
-            foreach (var item in type.GetTypeInfo()
-                .GetCustomAttributes(true)
-                .OfType<KnownTypeAttribute>()
-                .Select(a => a.Type))
-            {
-                if (knownTypes.Add(item))
-                {
-                    GetAllKnownTypes(item, knownTypes);
-                }
-            }
-
-            return knownTypes;
+            return obj.GetType().GetProperty(field.Name).GetValue(obj);
         }
+
+        #endregion Private Methods
     }
 }

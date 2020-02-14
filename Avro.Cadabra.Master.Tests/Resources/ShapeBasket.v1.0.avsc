@@ -1,0 +1,109 @@
+{
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.ShapeBasket",
+  "fields": [
+    {
+      "name": "Shapes",
+      "type": [
+        {
+          "type": "array",
+          "items": [
+            {
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.Circle",
+              "fields": [
+                {
+                  "name": "Name",
+                  "type": [ "null", "string" ]
+                },
+                {
+                  "name": "Radius",
+                  "type": [ "null", "double" ]
+                },
+                {
+                  "name": "Color",
+                  "type": {
+                    "type": "enum",
+                    "name": "Gooseman.Avro.Utility.Tests.Models.BasicColor",
+                    "symbols": [
+                      "Red",
+                      "Orange",
+                      "Yellow",
+                      "Green",
+                      "Blue",
+                      "Indigo",
+                      "Violet"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.Square",
+              "fields": [
+                {
+                  "name": "Name",
+                  "type": "string"
+                },
+                {
+                  "name": "Width",
+                  "type": "double"
+                },
+                {
+                  "name": "Color",
+                  "type": "Gooseman.Avro.Utility.Tests.Models.BasicColor"
+                }
+              ]
+            },
+            {
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.Triangle",
+              "fields": [
+                {
+                  "name": "Name",
+                  "type": "string"
+                },
+                {
+                  "name": "SideA",
+                  "type": "double"
+                },
+                {
+                  "name": "SideB",
+                  "type": "double"
+                },
+                {
+                  "name": "SideC",
+                  "type": "double"
+                },
+                {
+                  "name": "Color",
+                  "type": "Gooseman.Avro.Utility.Tests.Models.BasicColor"
+                }
+              ]
+            },
+            {
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.StrangeShape",
+              "fields": [
+                {
+                  "name": "Name",
+                  "type": "string"
+                },
+                {
+                  "name": "ChildShape",
+                  "type": [
+                    "Gooseman.Avro.Utility.Tests.Models.Circle",
+                    "Gooseman.Avro.Utility.Tests.Models.Square",
+                    "Gooseman.Avro.Utility.Tests.Models.Triangle",
+                    "Gooseman.Avro.Utility.Tests.Models.StrangeShape"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

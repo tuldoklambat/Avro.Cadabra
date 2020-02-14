@@ -1,0 +1,35 @@
+{
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.GenericType",
+  "fields": [
+    {
+      "name": "GenericInstance",
+      "type": "{type}"
+    },
+    {
+      "name": "GenericArray",
+      "type": {
+        "type": "array",
+        "items": "{type}"
+      }
+    },
+    {
+      "name": "GenericList",
+      "type": [
+        {
+          "type": "array",
+          "items": "{type}"
+        }
+      ]
+    },
+    {
+      "name": "GenericMap",
+      "type": [
+        {
+          "type": "map",
+          "values": "{type}"
+        }
+      ]
+    }
+  ]
+}

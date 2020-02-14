@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avro-helper-master", "avro-helper-master\avro-helper-master.csproj", "{33385085-A035-4D0A-87CA-F1C1F51BB78B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avro.Cadabra", "Avro.Cadabra.Master\Avro.Cadabra.csproj", "{33385085-A035-4D0A-87CA-F1C1F51BB78B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avro-helper-master-test", "..\avro-helper-master-test\avro-helper-master-test.csproj", "{76590E94-CF90-4FB1-ABB9-AB3D8666B987}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avro.Cadabra.Tests", "Avro.Cadabra.Master.Tests\Avro.Cadabra.Tests.csproj", "{76590E94-CF90-4FB1-ABB9-AB3D8666B987}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

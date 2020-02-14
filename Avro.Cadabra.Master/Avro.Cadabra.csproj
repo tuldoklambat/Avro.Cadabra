@@ -7,8 +7,8 @@
     <ProjectGuid>{33385085-A035-4D0A-87CA-F1C1F51BB78B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>avro_helper_master</RootNamespace>
-    <AssemblyName>avro-helper-master</AssemblyName>
+    <RootNamespace>Gooseman.Avro.Utility</RootNamespace>
+    <AssemblyName>Avro.Cadabra</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,7 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AvroHelper.cs" />
+    <Compile Include="AvroCadabra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
