@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Avro.Cadabra.Master\Avro.Cadabra.csproj" />
+    <ProjectReference Include="..\Avro.Cadabra.Core\Avro.Cadabra.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

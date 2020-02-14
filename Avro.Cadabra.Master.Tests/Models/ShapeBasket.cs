@@ -1,4 +1,4 @@
-﻿// Copyright (c) Joseph De Guzman (tuldoklambat@gmail.com)
+﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
 //
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY

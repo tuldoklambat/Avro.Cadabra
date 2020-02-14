@@ -1,4 +1,4 @@
-﻿// Copyright (c) Joseph De Guzman (tuldoklambat@gmail.com)
+﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
 //
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -77,7 +77,7 @@ namespace Gooseman.Avro.Utility
             {
                 var property = instance.GetType().GetProperty(field.Name);
 
-                // check if the field also exists in the previous schema used in the 
+                // check if the field also exists in the previous schema used in the
                 // conversion of the T instance to an AvroRecord otherwise ignore
                 if (avroRecord.Schema.TryGetField(field.Name, out RecordField matchField))
                 {

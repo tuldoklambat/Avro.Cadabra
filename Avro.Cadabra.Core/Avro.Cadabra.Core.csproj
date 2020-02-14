@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <RootNamespace>Gooseman.Avro.Utility</RootNamespace>
+    <Authors>Joseph De Guzman</Authors>
+    <Company>Gooseman Brothers</Company>
+    <Description>A tiny library to convert a user-defined C# object to an AvroRecord and back.</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>Gooseman Brothers</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/tuldoklambat/Avro.Cadabra</RepositoryUrl>
+    <PackageTags>Avro</PackageTags>
+    <NeutralLanguage>English</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Avro.Core" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

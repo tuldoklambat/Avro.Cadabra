@@ -1,4 +1,4 @@
-﻿// Copyright (c) Joseph De Guzman (tuldoklambat@gmail.com)
+﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
 //
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -221,7 +221,6 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
-
         }
     }
 }
