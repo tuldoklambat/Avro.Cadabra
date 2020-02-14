@@ -68,3 +68,9 @@ void main()
     }
 }
 ```
+
+## Available in Nuget
+
+```
+PM> Install-Package Avro.Cadabra.Core -Version 1.0.0
+```
