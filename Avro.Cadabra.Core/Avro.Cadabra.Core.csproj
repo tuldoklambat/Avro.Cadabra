@@ -8,10 +8,11 @@
     <Description>A tiny library to convert a user-defined C# object to an AvroRecord and back.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Gooseman Brothers</Copyright>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/tuldoklambat/Avro.Cadabra</RepositoryUrl>
     <PackageTags>Avro</PackageTags>
     <NeutralLanguage>English</NeutralLanguage>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
