@@ -1,32 +1,32 @@
 {
-    "type": "record",
-    "name": "Gooseman.Avro.Utility.Tests.Models.Complex.ProductRequest",
-    "fields": [
-        {
-            "name": "Product",
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.Complex.ProductRequest",
+  "fields": [
+    {
+      "name": "Product",
+      "type": {
+        "type": "record",
+        "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Product",
+        "fields": [
+          {
+            "name": "ExpiryDate",
+            "type": "long"
+          },
+          {
+            "name": "Tenor",
             "type": {
-                "type": "record",
-                "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Product",
-                "fields": [
-                    {
-                        "name": "ExpiryDate",
-                        "type": "long"
-                    },
-                    {
-                        "name": "Tenor",
-                        "type": {
-                            "type": "record",
-                            "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Tenor",
-                            "fields": [
-                                {
-                                    "name": "_tenorInMonths",
-                                    "type": "int"
-                                }
-                            ]
-                        }
-                    }
-                ]
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Tenor",
+              "fields": [
+                {
+                  "name": "_tenorInMonths",
+                  "type": "int"
+                }
+              ]
             }
-        }
-    ]
+          }
+        ]
+      }
+    }
+  ]
 }

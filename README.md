@@ -19,7 +19,7 @@ avroRecord.FromAvroRecord<MyObjectClass>();
 avroRecord.FromAvroRecord<MyObjectClass>(newerSchema);
 ```
 
-## Example:
+### Example:
 
 ```csharp
 public class ShapeBasket
@@ -67,6 +67,83 @@ void main()
         target = sequentialReader.Objects.Cast<AvroRecord>().Select(r => r.FromAvroRecord<ShapeBasket>()).FirstOrDefault();
     }
 }
+```
+
+## Custom Field Processor
+
+For instances when you need to serialize the private state of your objects (TF?! IKR?) or do pre field processing before serializing/deserializing.
+
+### Example:
+
+```csharp
+
+using System;
+using System.Reflection;
+using System.Text;
+using Gooseman.Avro.Utility;
+using Microsoft.Hadoop.Avro.Schema;
+
+namespace TestAvro
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var schema = "{\"type\":\"record\",\"name\":\"TestAvro.SecretMessage\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"Message\",\"type\":\"string\"}]}";
+            var secretMessage = new SecretMessage { Message = "Hello There!" };
+            var secretMessageFieldProcessor = new SecretMessageFieldProcessor();
+            var avro = secretMessage.ToAvroRecord(schema, secretMessageFieldProcessor);
+            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customFieldProcessor: secretMessageFieldProcessor);
+
+            Console.WriteLine($"Message: {secretMessage.Message}, Encrypted Message: {avro[1]}, Restored Message: {secretMessageReveal.Message}");
+            Console.ReadLine();
+        }
+    }
+
+    public class SecretMessage
+    {
+        private Guid _id = Guid.NewGuid();
+        public Guid Id => _id;
+        public string Message { get; set; }
+    }
+
+    public class SecretMessageFieldProcessor : BaseCustomFieldProcessor
+    {
+        public override MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+        {
+            return recordField.Name == "_id"
+                ? typeof(T).GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance)
+                : base.GetMatchingMemberInfo<T>(recordField);
+        }
+
+        public override object PreFieldSerialization<T>(T obj, string fieldName)
+        {
+            switch (fieldName)
+            {
+                case "_id":
+                    var id = obj.GetFieldValue<T, Guid>(fieldName);
+                    return id;
+                case "Message":
+                    var sm = ((dynamic)obj).Message;
+                    return Convert.ToBase64String(Encoding.Default.GetBytes(sm));
+                default:
+                    return base.PreFieldSerialization(obj, fieldName);
+            }
+        }
+
+        public override object PreFieldDeserialization(string fieldName, object value)
+        {
+            switch (fieldName)
+            {
+                case "Message":
+                    return Encoding.Default.GetString(Convert.FromBase64String(value.ToString()));
+                default:
+                    return base.PreFieldDeserialization(fieldName, value);
+            }
+        }
+    }
+}
+
 ```
 
 ## Available in Nuget

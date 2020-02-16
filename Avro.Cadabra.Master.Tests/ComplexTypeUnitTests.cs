@@ -15,11 +15,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Gooseman.Avro.Utility.Tests.Models.Complex;
-using Microsoft.Hadoop.Avro.Schema;
-using NUnit.Framework.Constraints;
 
 namespace Gooseman.Avro.Utility.Tests
 {
@@ -258,7 +255,7 @@ namespace Gooseman.Avro.Utility.Tests
             so weed need to have a way to maintain the state of the request when sending hence the ICustomFieldProcessor
              */
 
-            var customFieldProcessor = new CustomFieldProcessor();
+            var customFieldProcessor = new TradeRequestFieldProcessor();
             var avroRequest = tradeRequest.ToAvroRecord(schema, customFieldProcessor);
 
             // assume we send the message on the wire, server receives and restores
@@ -271,57 +268,21 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(((Vanilla)receivedTradeRequest.Trade).ExpiryDate.Date, DateTime.Now.AddMonths(3).Date);
         }
 
-        class CustomFieldProcessor : ICustomFieldProcessor
+        [Test]
+        public void Test_Another_Custom_Field_Processor()
         {
-            #region Implementation of ICustomFieldProcessor
+            var schema = Encoding.Default.GetString(Resources.SecretMessage);
 
-            public MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
-            {
-                var type = typeof(T);
+            var secretMessage = new SecretMessage {Message = "Hello There!"};
+            var secretMessageFieldProcessor = new SecretMessageFieldProcessor();
+            var avro = secretMessage.ToAvroRecord(schema, secretMessageFieldProcessor);
+            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customFieldProcessor: secretMessageFieldProcessor);
 
-                if (type == typeof(Tenor) && recordField.Name == "_tenorInMonths"
-                    || type == typeof(Vanilla) && recordField.Name == "_tenor")
-                {
-                    return type.GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance);
-                }
+            // check if the message is encrypted
+            Assert.AreNotEqual(Convert.ToString(avro["Message"]), secretMessage.Message);
 
-                return null;
-            }
-
-            public object GetValue<T>(T instanceObj, RecordField recordField)
-            {
-                object result = null;
-                var type = typeof(T);
-
-                if (type == typeof(Vanilla))
-                {
-                    switch (recordField.Name)
-                    {
-                        case "_tenor":
-                            result = instanceObj.GetFieldValue<T, Tenor>(recordField.Name);
-                            break;
-                        case "ExpiryDate":
-                            // bypass ExpiryDate getter to prevent throwing an exception because tenor.Resolve() is not called
-                            // and effectively getting the value of ExpiryDate if its actually assigned
-                            result = instanceObj.GetFieldValue<T, DateTime>("_expiryDate");
-                            break;
-                    }
-                }
-
-                if (type == typeof(Tenor))
-                {
-                    switch (recordField.Name)
-                    {
-                        case "_tenorInMonths":
-                            result = instanceObj.GetFieldValue<T, int>(recordField.Name);
-                            break;
-                    }
-                }
-
-                return result;
-            }
-
-            #endregion
+            // check if restored message is same
+            Assert.AreEqual(secretMessage.Message, secretMessageReveal.Message);
         }
     }
 }

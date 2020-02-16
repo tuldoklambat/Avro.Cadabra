@@ -73,6 +73,16 @@ namespace Gooseman.Avro.Utility.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] SecretMessage {
+            get {
+                object obj = ResourceManager.GetObject("SecretMessage", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] ShapeBasket_v1_0 {
             get {
                 object obj = ResourceManager.GetObject("ShapeBasket_v1_0", resourceCulture);

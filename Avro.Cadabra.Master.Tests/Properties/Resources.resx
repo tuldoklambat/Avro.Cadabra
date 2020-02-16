@@ -121,6 +121,9 @@
   <data name="GenericSchemaTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GenericSchemaTemplate.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="SecretMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SecretMessage.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="ShapeBasket_v1_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ShapeBasket.v1.0.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

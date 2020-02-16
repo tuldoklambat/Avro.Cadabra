@@ -31,7 +31,7 @@ namespace Gooseman.Avro.Utility
         public static AvroRecord ToAvroRecord<T>(
             this T obj, 
             string schema, 
-            ICustomFieldProcessor customFieldProcessor = null) 
+            BaseCustomFieldProcessor customFieldProcessor = null) 
             where T : class
         {
             return ToAvroRecord(obj, (RecordSchema)new JsonSchemaBuilder().BuildSchema(schema), customFieldProcessor);
@@ -47,7 +47,7 @@ namespace Gooseman.Avro.Utility
         public static AvroRecord ToAvroRecord<T>(
             this T obj,
             RecordSchema schema,
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
             where T : class
         {
             return _ToAvroRecord(obj, schema, customFieldProcessor);
@@ -64,7 +64,7 @@ namespace Gooseman.Avro.Utility
         public static T FromAvroRecord<T>(
             this AvroRecord avroRecord, 
             string schema = null, 
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
             where T : class, new()
         {
             return schema == null
@@ -77,7 +77,7 @@ namespace Gooseman.Avro.Utility
         private static AvroRecord _ToAvroRecord<T>(
             T obj, 
             RecordSchema schema, 
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
         {
             if (schema == null || !obj.GetType().FullName.StartsWith(schema.FullName))
             {
@@ -96,7 +96,7 @@ namespace Gooseman.Avro.Utility
                 var memberInfo = customFieldProcessor?.GetMatchingMemberInfo<T>(field)
                                  ?? obj.GetType().GetProperty(field.Name);
 
-                var value = customFieldProcessor?.GetValue(obj, field);
+                var value = customFieldProcessor?.PreFieldSerialization(obj, field.Name);
                 switch (memberInfo)
                 {
                     case PropertyInfo pi:
@@ -115,7 +115,7 @@ namespace Gooseman.Avro.Utility
         private static T _FromAvroRecord<T>(
             AvroRecord avroRecord,
             RecordSchema schema = null,
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
             where T : class, new()
         {
             if (schema == null)
@@ -146,10 +146,18 @@ namespace Gooseman.Avro.Utility
                     switch (memberInfo)
                     {
                         case PropertyInfo pi:
-                            pi.SetValue(instance, ValueToDotNetType(pi.PropertyType));
+                            var propValue = ValueToDotNetType(pi.PropertyType);
+                            pi.SetValue(instance,
+                                customFieldProcessor == null
+                                    ? propValue
+                                    : customFieldProcessor.PreFieldDeserialization(field.Name, propValue));
                             break;
                         case FieldInfo fi:
-                            fi.SetValue(instance, ValueToDotNetType(fi.FieldType));
+                            var fieldValue = ValueToDotNetType(fi.FieldType);
+                            fi.SetValue(instance,
+                                customFieldProcessor == null
+                                    ? fieldValue
+                                    : customFieldProcessor.PreFieldDeserialization(field.Name, fieldValue));
                             break;
                     }
                 }
@@ -164,7 +172,7 @@ namespace Gooseman.Avro.Utility
             IEnumerable<Type> typeCache, 
             Type type, 
             object fieldValue, 
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
         {
             if (fieldValue == null)
             {
@@ -243,7 +251,7 @@ namespace Gooseman.Avro.Utility
         private static object ConvertValueToAvroType<T>(
             TypeSchema typeSchema, 
             T fieldValue,
-            ICustomFieldProcessor customFieldProcessor = null)
+            BaseCustomFieldProcessor customFieldProcessor = null)
         {
             if (fieldValue == null)
                 return null;
