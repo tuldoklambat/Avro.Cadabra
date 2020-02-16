@@ -14,11 +14,11 @@
               "fields": [
                 {
                   "name": "Name",
-                  "type": [ "null", "string" ]
+                  "type": ["null", "string"]
                 },
                 {
                   "name": "Radius",
-                  "type": [ "null", "double" ]
+                  "type": ["null", "double"]
                 },
                 {
                   "name": "Color",

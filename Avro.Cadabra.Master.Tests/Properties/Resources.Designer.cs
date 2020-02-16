@@ -89,5 +89,15 @@ namespace Gooseman.Avro.Utility.Tests.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TradeRequest {
+            get {
+                object obj = ResourceManager.GetObject("TradeRequest", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

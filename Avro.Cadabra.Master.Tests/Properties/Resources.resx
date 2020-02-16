@@ -127,4 +127,7 @@
   <data name="ShapeBasket_v2_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ShapeBasket.v2.0.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="TradeRequest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TradeRequest.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

@@ -1,0 +1,32 @@
+{
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.Complex.TradeRequest",
+  "fields": [
+    {
+      "name": "Trade",
+      "type": {
+        "type": "record",
+        "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Vanilla",
+        "fields": [
+          {
+            "name": "ExpiryDate",
+            "type": "long"
+          },
+          {
+            "name": "_tenor",
+            "type": {
+              "type": "record",
+              "name": "Gooseman.Avro.Utility.Tests.Models.Complex.Tenor",
+              "fields": [
+                {
+                  "name": "_tenorInMonths",
+                  "type": "int"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

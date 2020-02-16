@@ -4,8 +4,9 @@
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-// MERCHANTABLITY OR NON-INFRINGEMENT.
+// MERCHANTABILITY OR NON-INFRINGEMENT.
 
+using System;
 using Gooseman.Avro.Utility.Tests.Models;
 using Gooseman.Avro.Utility.Tests.Properties;
 using Microsoft.Hadoop.Avro;
@@ -14,7 +15,11 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Gooseman.Avro.Utility.Tests.Models.Complex;
+using Microsoft.Hadoop.Avro.Schema;
+using NUnit.Framework.Constraints;
 
 namespace Gooseman.Avro.Utility.Tests
 {
@@ -221,6 +226,102 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
+        }
+
+        [Test]
+        public void Test_Custom_Field_Processor()
+        {
+            /*
+              The following is a contrive example of doing Avro serialization to an 
+              existing DTO/model with some special requirements and cannot be modified
+             */
+
+            /*
+             Scenario: We are sending a trade request down the wire with fields that can be set but not retrieve
+             and which has impact to non-pure properties e.g. throws an exception if a method is not called before
+             retrieving the property value
+             */
+
+            var schema = Encoding.Default.GetString(Resources.TradeRequest);
+
+            var trade = new Vanilla();
+            var tenor = new Tenor(3);
+            trade.SetTenor(tenor);
+
+            var tradeRequest = new TradeRequest
+            {
+                Trade = trade
+            };
+
+            /*
+            for some reason tradeRequest.ApplyBinding(); cannot be called by the client sending the request
+            so weed need to have a way to maintain the state of the request when sending hence the ICustomFieldProcessor
+             */
+
+            var customFieldProcessor = new CustomFieldProcessor();
+            var avroRequest = tradeRequest.ToAvroRecord(schema, customFieldProcessor);
+
+            // assume we send the message on the wire, server receives and restores
+            // the message using the same CustomFieldProcessor
+
+            var receivedTradeRequest = avroRequest.FromAvroRecord<TradeRequest>(customFieldProcessor: customFieldProcessor);
+            receivedTradeRequest.ApplyBinding();
+
+            // test if the receive expiry date is 3 months from now
+            Assert.AreEqual(((Vanilla)receivedTradeRequest.Trade).ExpiryDate.Date, DateTime.Now.AddMonths(3).Date);
+        }
+
+        class CustomFieldProcessor : ICustomFieldProcessor
+        {
+            #region Implementation of ICustomFieldProcessor
+
+            public MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+            {
+                var type = typeof(T);
+
+                if (type == typeof(Tenor) && recordField.Name == "_tenorInMonths"
+                    || type == typeof(Vanilla) && recordField.Name == "_tenor")
+                {
+                    return type.GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance);
+                }
+
+                return null;
+            }
+
+            public object GetValue<T>(T instanceObj, RecordField recordField)
+            {
+                object result = null;
+                var type = typeof(T);
+
+                if (type == typeof(Vanilla))
+                {
+                    switch (recordField.Name)
+                    {
+                        case "_tenor":
+                            result = instanceObj.GetFieldValue<T, Tenor>(recordField.Name);
+                            break;
+                        case "ExpiryDate":
+                            // bypass ExpiryDate getter to prevent throwing an exception because tenor.Resolve() is not called
+                            // and effectively getting the value of ExpiryDate if its actually assigned
+                            result = instanceObj.GetFieldValue<T, DateTime>("_expiryDate");
+                            break;
+                    }
+                }
+
+                if (type == typeof(Tenor))
+                {
+                    switch (recordField.Name)
+                    {
+                        case "_tenorInMonths":
+                            result = instanceObj.GetFieldValue<T, int>(recordField.Name);
+                            break;
+                    }
+                }
+
+                return result;
+            }
+
+            #endregion
         }
     }
 }

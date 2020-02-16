@@ -4,7 +4,7 @@
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-// MERCHANTABLITY OR NON-INFRINGEMENT.
+// MERCHANTABILITY OR NON-INFRINGEMENT.
 
 using Gooseman.Avro.Utility.Tests.Models;
 using Gooseman.Avro.Utility.Tests.Properties;
@@ -118,7 +118,7 @@ namespace Gooseman.Avro.Utility.Tests
             // convert back
             dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")
                 .MakeGenericMethod(((object)instance).GetType())
-                .Invoke(null, new object[] { convertedInstance, schema });
+                .Invoke(null, new object[] { convertedInstance, schema, null });
 
             // compare
             Assert.AreEqual(instance.GenericInstance, target.GenericInstance);
