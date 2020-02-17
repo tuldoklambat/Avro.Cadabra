@@ -41,7 +41,7 @@ namespace Gooseman.Avro.Utility
         /// Converts an object to an AvroRecord based on the specified schema
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="schema"></param>
+        /// <param name="schema">The schema to follow when converting the object</param>
         /// <param name="customFieldProcessor"></param>
         /// <returns></returns>
         public static AvroRecord ToAvroRecord<T>(
@@ -79,7 +79,7 @@ namespace Gooseman.Avro.Utility
             RecordSchema schema, 
             BaseCustomFieldProcessor customFieldProcessor = null)
         {
-            if (schema == null || !obj.GetType().FullName.StartsWith(schema.FullName))
+            if (schema == null)
             {
                 return null;
             }
@@ -165,7 +165,6 @@ namespace Gooseman.Avro.Utility
 
             return instance;
         }
-
 
         private static object ConvertValueToDotNetType(
             TypeSchema typeSchema, 
@@ -347,6 +346,19 @@ namespace Gooseman.Avro.Utility
             object value)
         {
             typeof(T).GetProperty(propertyName)?.SetValue(obj, value);
+        }
+
+        public static object GetDefault(this Type t)
+        {
+            return typeof(AvroCadabra)
+                .GetMethod("GetDefault", BindingFlags.NonPublic | BindingFlags.Static)
+                ?.MakeGenericMethod(t)
+                .Invoke(null, null);
+        }
+
+        private static T GetDefault<T>()
+        {
+            return default;
         }
 
         #endregion

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net451;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Gooseman.Avro.Utility</RootNamespace>
     <Authors>Joseph De Guzman</Authors>
     <Company>Gooseman Brothers</Company>
@@ -10,9 +10,9 @@
     <Copyright>Gooseman Brothers</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/tuldoklambat/Avro.Cadabra</RepositoryUrl>
-    <PackageTags>Avro</PackageTags>
+    <PackageTags>avro, avro tool, avro helper, avro utility, serialization, deserialization</PackageTags>
     <NeutralLanguage>English</NeutralLanguage>
-    <Version>1.0.1.1</Version>
+    <Version>1.0.1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

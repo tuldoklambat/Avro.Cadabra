@@ -11,6 +11,7 @@ using Gooseman.Avro.Utility.Tests.Properties;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Text;
 
 namespace Gooseman.Avro.Utility.Tests
@@ -128,6 +129,41 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.GenericList[1], target.GenericList[1]);
             Assert.AreEqual(instance.GenericMap["1"], target.GenericMap["1"]);
             Assert.AreEqual(instance.GenericMap["2"], target.GenericMap["2"]);
+        }
+
+        [Test]
+        public void Test_Primitive_Types_Defaults()
+        {
+            var schema = Encoding.Default.GetString(Resources.PrimitiveTypeDefaults);
+            var primitiveTypeDefaults = new PrimitiveTypeDefaults();
+            var avro = primitiveTypeDefaults.ToAvroRecord(schema);
+            var restored = avro.FromAvroRecord<PrimitiveTypeDefaults>();
+
+            // as expected since there's no way to tell whether a value type has been assigned
+            Assert.AreNotEqual(restored.Boolean, true);
+            Assert.AreNotEqual(restored.Int, 123);
+            Assert.AreNotEqual(restored.Long, 345);
+            Assert.AreNotEqual(restored.Float, 567);
+            Assert.AreNotEqual(restored.Double, 789);
+
+            // string on the other is a reference type which by default is null if not assigned
+            Assert.AreEqual(restored.String, "Hello There!");
+        }
+
+        [Test]
+        public void Test_Nullable_Primitive_Types_Defaults()
+        {
+            var schema = Encoding.Default.GetString(Resources.NullableTypeDefaults);
+            var nullableTypeDefaults = new NullableTypeDefaults();
+            var avro = nullableTypeDefaults.ToAvroRecord(schema);
+            var restored = avro.FromAvroRecord<NullableTypeDefaults>();
+
+            Assert.AreEqual(restored.Boolean, true);
+            Assert.AreEqual(restored.Int, 123);
+            Assert.AreEqual(restored.Long, 345);
+            Assert.AreEqual(restored.Float, 567);
+            Assert.AreEqual(restored.Double, 789);
+            Assert.AreEqual(restored.String, "Hello There!");
         }
     }
 }

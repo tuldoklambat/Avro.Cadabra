@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.PrimitiveTypeDefaults",
+  "fields": [
+    {
+      "name": "Boolean",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "name": "Int",
+      "type": "int",
+      "default": 123
+    },
+    {
+      "name": "Long",
+      "type": "long",
+      "default": 345
+    },
+    {
+      "name": "Float",
+      "type": "float",
+      "default": 567
+    },
+    {
+      "name": "Double",
+      "type": "double",
+      "default": 789
+    },
+    {
+      "name": "String",
+      "type": "string",
+      "default": "Hello There!"
+    }
+  ]
+}

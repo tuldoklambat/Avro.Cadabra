@@ -73,6 +73,26 @@ namespace Gooseman.Avro.Utility.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] NullableTypeDefaults {
+            get {
+                object obj = ResourceManager.GetObject("NullableTypeDefaults", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PrimitiveTypeDefaults {
+            get {
+                object obj = ResourceManager.GetObject("PrimitiveTypeDefaults", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] SecretMessage {
             get {
                 object obj = ResourceManager.GetObject("SecretMessage", resourceCulture);
