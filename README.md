@@ -2,9 +2,9 @@
 
 A tiny library to convert a user-defined C# object to an [AvroRecord](<https://docs.microsoft.com/en-us/previous-versions/azure/reference/dn627309(v%3Dazure.100)>) and back.
 
-Useful when you need to use Avro to serialize your DTOs (data transfer objects) but can't afford to decorate it with attributes that may be required for Avro to work.
+Useful when you need to use Avro to serialize your DTOs (data transfer objects) but can't afford to or not allowed to redesign just to make it work.
 
-Another is for instances when you only want to serialize certain properties of your model which is driven by the schema provided.
+Another is for instances when you only want to serialize certain properties of your model which can be driven by the schema provided.
 
 ## Syntax:
 
