@@ -11,7 +11,6 @@ using Gooseman.Avro.Utility.Tests.Properties;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Resources;
 using System.Text;
 
 namespace Gooseman.Avro.Utility.Tests
@@ -117,7 +116,7 @@ namespace Gooseman.Avro.Utility.Tests
             var convertedInstance = ((object)instance).ToAvroRecord(schema);
 
             // convert back
-            dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")
+            dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")?
                 .MakeGenericMethod(((object)instance).GetType())
                 .Invoke(null, new object[] { convertedInstance, schema, null });
 

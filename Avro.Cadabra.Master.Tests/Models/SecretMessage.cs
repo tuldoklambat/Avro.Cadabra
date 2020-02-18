@@ -16,20 +16,19 @@ namespace Gooseman.Avro.Utility.Tests.Models
     {
         #region Overrides of BaseCustomFieldProcessor
 
-        public override MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+        public override MemberInfo GetMatchingMemberInfo(Type type, RecordField recordField)
         {
             return recordField.Name == "_id" 
-                ? typeof(T).GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance) 
-                : base.GetMatchingMemberInfo<T>(recordField);
+                ? type.GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance) 
+                : base.GetMatchingMemberInfo(type, recordField);
         }
 
-        public override object PreFieldSerialization<T>(T obj, string fieldName)
+        public override object PreFieldSerialization(object obj, string fieldName)
         {
             switch (fieldName)
             {
                 case "_id":
-                    var id = obj.GetFieldValue<T, Guid>(fieldName);
-                    return id;
+                    return obj.GetFieldValue(fieldName);
                 case "Message":
                     var sm = ((dynamic) obj).Message;
                     return Convert.ToBase64String(Encoding.Default.GetBytes(sm));

@@ -81,14 +81,14 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schema_v1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
-            var schema_v2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
+            var schemaV1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
+            var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
 
             // encode using v1 schema
-            var convertedInstance = ((object)instance).ToAvroRecord(schema_v1);
+            var convertedInstance = ((object)instance).ToAvroRecord(schemaV1);
 
             // restore using v2 schema
-            dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schema_v2);
+            dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schemaV2);
 
             Assert.AreEqual(instance.Shapes[0].Name, target.Shapes[0].Name);
 
@@ -128,14 +128,14 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schema_v1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
-            var schema_v2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
+            var schemaV1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
+            var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
 
             // encode using v2 schema
-            var convertedInstance = ((object)instance).ToAvroRecord(schema_v2);
+            var convertedInstance = ((object)instance).ToAvroRecord(schemaV2);
 
             // restore using v1 schema
-            dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schema_v1);
+            dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schemaV1);
 
             Assert.AreEqual(instance.Shapes[0].Name, target.Shapes[0].Name);
 
@@ -192,7 +192,7 @@ namespace Gooseman.Avro.Utility.Tests
                 sequentialWriter.Write(((object)instance).ToAvroRecord(schema));
             }
 
-            dynamic target = new ShapeBasket();
+            dynamic target;
             // deserialize
             using (var fs = new FileStream(avroFile, FileMode.Open))
             {

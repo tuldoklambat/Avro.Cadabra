@@ -93,6 +93,26 @@ namespace Gooseman.Avro.Utility.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] SalesRecord {
+            get {
+                object obj = ResourceManager.GetObject("SalesRecord", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SalesRecords {
+            get {
+                object obj = ResourceManager.GetObject("SalesRecords", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] SecretMessage {
             get {
                 object obj = ResourceManager.GetObject("SecretMessage", resourceCulture);

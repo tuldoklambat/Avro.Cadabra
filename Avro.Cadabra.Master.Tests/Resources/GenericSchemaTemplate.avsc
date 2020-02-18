@@ -1,6 +1,7 @@
 {
   "type": "record",
   "name": "Gooseman.Avro.Utility.Tests.Models.GenericType",
+  "aliases": [ "Gooseman.Avro.Utility.Tests.Models.GenericType`1" ],
   "fields": [
     {
       "name": "GenericInstance",

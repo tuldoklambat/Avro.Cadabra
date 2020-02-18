@@ -8,35 +8,33 @@ namespace Gooseman.Avro.Utility.Tests.Models.Complex
     {
         #region Overrides of BaseCustomFieldProcessor
 
-        public override MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+        public override MemberInfo GetMatchingMemberInfo(Type type, RecordField recordField)
         {
-            var type = typeof(T);
-
             if (type == typeof(Tenor) && recordField.Name == "_tenorInMonths"
                 || type == typeof(Vanilla) && recordField.Name == "_tenor")
             {
                 return type.GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
-            return base.GetMatchingMemberInfo<T>(recordField);
+            return base.GetMatchingMemberInfo(type, recordField);
         }
 
-        public override object PreFieldSerialization<T>(T obj, string fieldName)
+        public override object PreFieldSerialization(object obj, string fieldName)
         {
             var result = base.PreFieldSerialization(obj, fieldName);
-            var type = typeof(T);
+            var type = obj.GetType();
 
             if (type == typeof(Vanilla))
             {
                 switch (fieldName)
                 {
                     case "_tenor":
-                        result = obj.GetFieldValue<T, Tenor>(fieldName);
+                        result = obj.GetFieldValue(fieldName);
                         break;
                     case "ExpiryDate":
                         // bypass ExpiryDate getter to prevent throwing an exception because tenor.Resolve() is not called
                         // and effectively getting the value of ExpiryDate if its actually assigned
-                        result = obj.GetFieldValue<T, DateTime>("_expiryDate");
+                        result = obj.GetFieldValue("_expiryDate");
                         break;
                 }
             }
@@ -46,7 +44,7 @@ namespace Gooseman.Avro.Utility.Tests.Models.Complex
                 switch (fieldName)
                 {
                     case "_tenorInMonths":
-                        result = obj.GetFieldValue<T, int>(fieldName);
+                        result = obj.GetFieldValue(fieldName);
                         break;
                 }
             }
