@@ -18,27 +18,27 @@ namespace Gooseman.Avro.Utility
 {
     public static partial class AvroCadabra
     {
+        private static ICustomValueGetter _customValueGetter;
+        
         /// <summary>
         /// Converts an object to an Avro generic record based on the supplied schema
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="recordSchema"></param>
-        /// <param name="customFieldProcessor">For special field processing</param>
+        /// <param name="customValueGetter"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static AvroRecord ToAvroRecord<T>(
             this T obj,
             string recordSchema,
-            BaseCustomFieldProcessor customFieldProcessor = null) where T : class
+            ICustomValueGetter customValueGetter = null) where T : class
         {
             var typeSchema = new JsonSchemaBuilder().BuildSchema(recordSchema);
-            if (typeSchema is RecordSchema)
-            {
-                _customFieldProcessor = customFieldProcessor;
-                return (AvroRecord) ToAvroRecord(obj, typeSchema);
-            }
+            if (!(typeSchema is RecordSchema))
+                throw new ApplicationException("Invalid record schema");
 
-            throw new ApplicationException("Invalid record schema");
+            _customValueGetter = customValueGetter;
+            return (AvroRecord) ToAvroRecord(obj, typeSchema);
         }
 
         private static object ToAvroRecord(
@@ -54,25 +54,13 @@ namespace Gooseman.Avro.Utility
             {
                 case RecordSchema recordSchema:
                     var avroRecord = new AvroRecord(recordSchema);
+                    
                     foreach (var field in recordSchema.Fields)
                     {
-                        var memberInfo = _customFieldProcessor?.GetMatchingMemberInfo(obj.GetType(), field)
-                                         ?? obj.GetType().GetProperty(field.Name);
-
-                        var value = _customFieldProcessor?.PreFieldSerialization(obj, field.Name);
-                        switch (memberInfo)
-                        {
-                            case PropertyInfo pi:
-                                avroRecord[field.Position] = ToAvroRecord(
-                                    value ?? pi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema);
-                                
-                                break;
-                            case FieldInfo fi:
-                                avroRecord[field.Position] = ToAvroRecord(
-                                    value ?? fi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema);
-                                
-                                break;
-                        }
+                        var value = _customValueGetter?.GetValue(obj, field.Name) ??
+                                obj.GetPropertyValue(field.Name) ?? field.DefaultValue;
+                        
+                        avroRecord[field.Position] = ToAvroRecord(value, field.TypeSchema);
                     }
 
                     return avroRecord;

@@ -10,7 +10,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Hadoop.Avro;
 using Microsoft.Hadoop.Avro.Schema;
 
@@ -18,19 +17,22 @@ namespace Gooseman.Avro.Utility
 {
     public static partial class AvroCadabra
     {
+        private static ICustomValueSetter _customValueSetter;
+        private static Func<Type, bool> _typeCacheFilter;
+
         /// <summary>
         /// Converts an Avro generic record to a managed object based on the record's schema or supplied schema
         /// </summary>
         /// <param name="avroRecord"></param>
         /// <param name="recordSchema"></param>
         /// <param name="typeCacheFilter"></param>
-        /// <param name="customFieldProcessor"></param>
+        /// <param name="customValueSetter"></param>
         /// <returns></returns>
         public static T FromAvroRecord<T>(
             this AvroRecord avroRecord,
             string recordSchema = null,
             Func<Type, bool> typeCacheFilter = null,
-            BaseCustomFieldProcessor customFieldProcessor = null) where T : class
+            ICustomValueSetter customValueSetter = null) where T : class
         {
             TypeSchema typeSchema = avroRecord.Schema;
             if (recordSchema != null)
@@ -41,7 +43,7 @@ namespace Gooseman.Avro.Utility
             }
 
             _typeCacheFilter = typeCacheFilter;
-            _customFieldProcessor = customFieldProcessor;
+            _customValueSetter = customValueSetter;
 
             RefreshTypeCache(typeof(T));
 
@@ -63,7 +65,10 @@ namespace Gooseman.Avro.Utility
             switch (typeSchema)
             {
                 case RecordSchema recordSchema:
-                    if (managedType.IsAbstract)
+                    if (managedType.IsAbstract 
+                        || !managedType.IsGenericType
+                        || managedType == typeof(object)
+                        || managedType == typeof(AvroRecord))
                     {
                         if (ConcreteTypeCache.ContainsKey(recordSchema.FullName))
                         {
@@ -79,38 +84,18 @@ namespace Gooseman.Avro.Utility
                     var avroRecord = (AvroRecord) avroObj;
                     var instance = Activator.CreateInstance(managedType);
 
-                    foreach (var field in recordSchema.Fields)
+                    foreach (var field in
+                        recordSchema.Fields.Where(f => avroRecord.Schema.TryGetField(f.Name, out _)))
                     {
-                        var memberInfo = _customFieldProcessor?.GetMatchingMemberInfo(managedType, field)
-                                         ?? instance.GetType().GetProperty(field.Name);
+                        var runtimeType = instance.GetType().GetProperty(field.Name)?.PropertyType ??
+                                           field.TypeSchema.RuntimeType;
+                            
+                        var value = FromAvroRecord(avroRecord[field.Name] ?? field.DefaultValue,
+                            runtimeType, field.TypeSchema);
 
-                        // skip if the record does not contain the field in the schema
-                        if (!avroRecord.Schema.TryGetField(field.Name, out _))
-                            continue;
-
-                        var value = avroRecord[field.Name] ?? field.DefaultValue;
-
-                        switch (memberInfo)
+                        if (!(_customValueSetter?.SetValue(instance, field.Name, value) ?? false))
                         {
-                            case PropertyInfo pi:
-                                var propValue = FromAvroRecord(value, pi.PropertyType, field.TypeSchema);
-
-                                pi.SetValue(instance,
-                                    _customFieldProcessor == null
-                                        ? propValue
-                                        : _customFieldProcessor.PreFieldDeserialization(field.Name, propValue));
-
-                                break;
-
-                            case FieldInfo fi:
-                                var fieldValue = FromAvroRecord(value, fi.FieldType, field.TypeSchema);
-
-                                fi.SetValue(instance,
-                                    _customFieldProcessor == null
-                                        ? fieldValue
-                                        : _customFieldProcessor.PreFieldDeserialization(field.Name, fieldValue));
-
-                                break;
+                            instance.SetPropertyValue(field.Name, value);
                         }
                     }
 
@@ -138,7 +123,7 @@ namespace Gooseman.Avro.Utility
                     var itemType = managedType.IsArray
                         ? managedType.GetElementType()
                         : managedType.GenericTypeArguments[0];
-
+                    
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
                     var avroListAdd = avroList.GetType().GetMethod("Add");
@@ -153,9 +138,10 @@ namespace Gooseman.Avro.Utility
 
                 case MapSchema mapSchema:
                     var mapItemType = managedType.GenericTypeArguments[1];
-
+                    
                     var avroMap =
-                        Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), mapItemType));
+                        Activator.CreateInstance(
+                            typeof(Dictionary<,>).MakeGenericType(mapSchema.KeySchema.RuntimeType, mapItemType));
 
                     var avroMapAdd = avroMap.GetType().GetMethod("Add");
 
@@ -199,31 +185,6 @@ namespace Gooseman.Avro.Utility
             }
 
             return avroObj;
-        }
-
-        private static Func<Type, bool> _typeCacheFilter;
-        private static BaseCustomFieldProcessor _customFieldProcessor;
-
-        private static readonly Dictionary<string, Type> ConcreteTypeCache = new Dictionary<string, Type>();
-        private static readonly HashSet<Type> TypeRegistry = new HashSet<Type>();
-
-        private static void RefreshTypeCache(Type type)
-        {
-            if (TypeRegistry.Contains(type)) 
-                return;
-
-            TypeRegistry.Add(type);
-
-            if (!type.IsAbstract)
-            {
-                ConcreteTypeCache[type.FullName ?? type.Name] = type;
-            }
-
-            foreach (var t in type.Assembly.GetTypes().Where(t =>
-                !t.IsAbstract && (_typeCacheFilter == null || _typeCacheFilter(t))))
-            {
-                ConcreteTypeCache[t.FullName ?? t.Name] = t;
-            }
         }
     }
 }

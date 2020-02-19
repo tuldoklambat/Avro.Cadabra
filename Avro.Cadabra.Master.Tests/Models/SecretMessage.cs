@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using Microsoft.Hadoop.Avro.Schema;
+using NUnit.Framework.Interfaces;
 
 namespace Gooseman.Avro.Utility.Tests.Models
 {
@@ -12,43 +14,39 @@ namespace Gooseman.Avro.Utility.Tests.Models
         public string Message { get; set; }
     }
 
-    public class SecretMessageFieldProcessor : BaseCustomFieldProcessor
+    public class SecretMessageValueGetter : ICustomValueGetter
     {
-        #region Overrides of BaseCustomFieldProcessor
-
-        public override MemberInfo GetMatchingMemberInfo(Type type, RecordField recordField)
+        public object GetValue(object managedObject, string member)
         {
-            return recordField.Name == "_id" 
-                ? type.GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance) 
-                : base.GetMatchingMemberInfo(type, recordField);
-        }
-
-        public override object PreFieldSerialization(object obj, string fieldName)
-        {
-            switch (fieldName)
+            switch (member)
             {
                 case "_id":
-                    return obj.GetFieldValue(fieldName);
+                    return managedObject.GetFieldValue(member);
                 case "Message":
-                    var sm = ((dynamic) obj).Message;
+                    var sm = ((dynamic) managedObject).Message;
                     return Convert.ToBase64String(Encoding.Default.GetBytes(sm));
                 default:
-                    return base.PreFieldSerialization(obj, fieldName);
+                    return null;
             }
         }
+    }
 
-        public override object PreFieldDeserialization(string fieldName, object value)
+    public class SecretMessageValueSetter : ICustomValueSetter
+    {
+        public bool SetValue(object managedObject, string member, object value)
         {
-            switch (fieldName)
+            switch (member)
             {
+                case "_id":
+                    managedObject.SetFieldValue(member, value);
+                    return true;
                 case "Message":
-                    return Encoding.Default.GetString(Convert.FromBase64String(value.ToString()));
-                default:
-                    return base.PreFieldDeserialization(fieldName, value);
+                    managedObject.SetPropertyValue(member,
+                        Encoding.Default.GetString(Convert.FromBase64String(value.ToString())));
+                    return true;
             }
+
+            return false;
         }
-
-        #endregion
-
     }
 }

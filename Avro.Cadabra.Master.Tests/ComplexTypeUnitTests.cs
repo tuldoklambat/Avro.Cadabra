@@ -30,16 +30,22 @@ namespace Gooseman.Avro.Utility.Tests
                 Shapes = new List<IShape>
                 {
                     new Circle(),
-                    new Circle { Name = "Red Dot", Radius = 15, Color = BasicColor.Red },
-                    new Square { Name = "Blue Square", Width = 20, Color = BasicColor.Blue },
-                    new Triangle { Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo },
-                    new StrangeShape { Name = "Blob", ChildShape = new StrangeShape { Name = "Child Blob", ChildShape = new Square { Name = "Child Square", Width = 50 } } }
+                    new Circle {Name = "Red Dot", Radius = 15, Color = BasicColor.Red},
+                    new Square {Name = "Blue Square", Width = 20, Color = BasicColor.Blue},
+                    new Triangle
+                        {Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo},
+                    new StrangeShape
+                    {
+                        Name = "Blob",
+                        ChildShape = new StrangeShape
+                            {Name = "Child Blob", ChildShape = new Square {Name = "Child Square", Width = 50}}
+                    }
                 }
             };
 
             var schema = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
 
-            var convertedInstance = ((object)instance).ToAvroRecord(schema);
+            var convertedInstance = ((object) instance).ToAvroRecord(schema);
 
             dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schema);
 
@@ -62,7 +68,8 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].Name, target.Shapes[4].Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
-            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
+            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width,
+                target.Shapes[4].ChildShape.ChildShape.Width);
         }
 
         [Test]
@@ -74,10 +81,16 @@ namespace Gooseman.Avro.Utility.Tests
                 {
                     // the schema for Circle allows for Names and Radius to be null
                     new Circle(),
-                    new Circle { Name = "Red Dot", Radius = 15, Color = BasicColor.Red },
-                    new Square { Name = "Blue Square", Width = 20, Color = BasicColor.Blue },
-                    new Triangle { Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo },
-                    new StrangeShape { Name = "Blob", ChildShape = new StrangeShape { Name = "Child Blob", ChildShape = new Square { Name = "Child Square", Width = 50 } } }
+                    new Circle {Name = "Red Dot", Radius = 15, Color = BasicColor.Red},
+                    new Square {Name = "Blue Square", Width = 20, Color = BasicColor.Blue},
+                    new Triangle
+                        {Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo},
+                    new StrangeShape
+                    {
+                        Name = "Blob",
+                        ChildShape = new StrangeShape
+                            {Name = "Child Blob", ChildShape = new Square {Name = "Child Square", Width = 50}}
+                    }
                 }
             };
 
@@ -85,7 +98,7 @@ namespace Gooseman.Avro.Utility.Tests
             var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
 
             // encode using v1 schema
-            var convertedInstance = ((object)instance).ToAvroRecord(schemaV1);
+            var convertedInstance = ((object) instance).ToAvroRecord(schemaV1);
 
             // restore using v2 schema
             dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schemaV2);
@@ -109,7 +122,8 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].Name, target.Shapes[4].Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
-            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
+            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width,
+                target.Shapes[4].ChildShape.ChildShape.Width);
         }
 
         [Test]
@@ -121,10 +135,23 @@ namespace Gooseman.Avro.Utility.Tests
                 {
                     // the schema for Circle allows for Names and Radius to be null
                     new Circle(),
-                    new Circle { Name = "Red Dot", Radius = 15, Color = BasicColor.Red, Tag = "RD" },
-                    new Square { Name = "Blue Square", Width = 20, Color = BasicColor.Blue, Tag = "BS" },
-                    new Triangle { Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo, Tag = "BT" },
-                    new StrangeShape { Name = "Blob", ChildShape = new StrangeShape { Name = "Child Blob", ChildShape = new Square { Name = "Child Square", Width = 50, Tag = "CS" }, Tag = "CB" }, Tag = "B" }
+                    new Circle {Name = "Red Dot", Radius = 15, Color = BasicColor.Red, Tag = "RD"},
+                    new Square {Name = "Blue Square", Width = 20, Color = BasicColor.Blue, Tag = "BS"},
+                    new Triangle
+                    {
+                        Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo,
+                        Tag = "BT"
+                    },
+                    new StrangeShape
+                    {
+                        Name = "Blob",
+                        ChildShape = new StrangeShape
+                        {
+                            Name = "Child Blob",
+                            ChildShape = new Square {Name = "Child Square", Width = 50, Tag = "CS"}, Tag = "CB"
+                        },
+                        Tag = "B"
+                    }
                 }
             };
 
@@ -132,7 +159,7 @@ namespace Gooseman.Avro.Utility.Tests
             var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
 
             // encode using v2 schema
-            var convertedInstance = ((object)instance).ToAvroRecord(schemaV2);
+            var convertedInstance = ((object) instance).ToAvroRecord(schemaV2);
 
             // restore using v1 schema
             dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schemaV1);
@@ -159,7 +186,8 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].Name, target.Shapes[4].Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
-            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
+            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width,
+                target.Shapes[4].ChildShape.ChildShape.Width);
             Assert.IsTrue(string.IsNullOrEmpty(target.Shapes[4].Tag));
             Assert.IsTrue(string.IsNullOrEmpty(target.Shapes[4].ChildShape.Tag));
             Assert.IsTrue(string.IsNullOrEmpty(target.Shapes[4].ChildShape.ChildShape.Tag));
@@ -174,10 +202,16 @@ namespace Gooseman.Avro.Utility.Tests
                 {
                     // the schema for Circle allows for Names and Radius to be null
                     new Circle(),
-                    new Circle { Name = "Red Dot", Radius = 15, Color = BasicColor.Red },
-                    new Square { Name = "Blue Square", Width = 20, Color = BasicColor.Blue },
-                    new Triangle { Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo },
-                    new StrangeShape { Name = "Blob", ChildShape = new StrangeShape { Name = "Child Blob", ChildShape = new Square { Name = "Child Square", Width = 50 } } }
+                    new Circle {Name = "Red Dot", Radius = 15, Color = BasicColor.Red},
+                    new Square {Name = "Blue Square", Width = 20, Color = BasicColor.Blue},
+                    new Triangle
+                        {Name = "Bermuda Triangle", SideA = 10, SideB = 20, SideC = 30, Color = BasicColor.Indigo},
+                    new StrangeShape
+                    {
+                        Name = "Blob",
+                        ChildShape = new StrangeShape
+                            {Name = "Child Blob", ChildShape = new Square {Name = "Child Square", Width = 50}}
+                    }
                 }
             };
 
@@ -189,7 +223,7 @@ namespace Gooseman.Avro.Utility.Tests
             {
                 using var writer = AvroContainer.CreateGenericWriter(schema, fs, Codec.Deflate);
                 using var sequentialWriter = new SequentialWriter<object>(writer, 1);
-                sequentialWriter.Write(((object)instance).ToAvroRecord(schema));
+                sequentialWriter.Write(((object) instance).ToAvroRecord(schema));
             }
 
             dynamic target;
@@ -198,7 +232,8 @@ namespace Gooseman.Avro.Utility.Tests
             {
                 using var reader = AvroContainer.CreateGenericReader(fs);
                 using var sequentialReader = new SequentialReader<object>(reader);
-                target = sequentialReader.Objects.Cast<AvroRecord>().Select(r => r.FromAvroRecord<ShapeBasket>()).FirstOrDefault();
+                target = sequentialReader.Objects.Cast<AvroRecord>().Select(r => r.FromAvroRecord<ShapeBasket>())
+                    .FirstOrDefault();
             }
 
             File.Delete(avroFile);
@@ -222,7 +257,8 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(instance.Shapes[4].Name, target.Shapes[4].Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.Name, target.Shapes[4].ChildShape.Name);
             Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Name, target.Shapes[4].ChildShape.ChildShape.Name);
-            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width, target.Shapes[4].ChildShape.ChildShape.Width);
+            Assert.AreEqual(instance.Shapes[4].ChildShape.ChildShape.Width,
+                target.Shapes[4].ChildShape.ChildShape.Width);
         }
 
         [Test]
@@ -255,17 +291,17 @@ namespace Gooseman.Avro.Utility.Tests
             so weed need to have a way to maintain the state of the request when sending hence the ICustomFieldProcessor
              */
 
-            var customFieldProcessor = new TradeRequestFieldProcessor();
-            var avroRequest = tradeRequest.ToAvroRecord(schema, customFieldProcessor);
+            var avroRequest = tradeRequest.ToAvroRecord(schema, new TradeRequestValueGetter());
 
             // assume we send the message on the wire, server receives and restores
             // the message using the same CustomFieldProcessor
 
-            var receivedTradeRequest = avroRequest.FromAvroRecord<TradeRequest>(customFieldProcessor: customFieldProcessor);
+            var receivedTradeRequest =
+                avroRequest.FromAvroRecord<TradeRequest>(customValueSetter: new TradeRequestValueSetter());
             receivedTradeRequest.ApplyBinding();
 
             // test if the receive expiry date is 3 months from now
-            Assert.AreEqual(((Vanilla)receivedTradeRequest.Trade).ExpiryDate.Date, DateTime.Now.AddMonths(3).Date);
+            Assert.AreEqual(((Vanilla) receivedTradeRequest.Trade).ExpiryDate.Date, DateTime.Now.AddMonths(3).Date);
         }
 
         [Test]
@@ -274,9 +310,9 @@ namespace Gooseman.Avro.Utility.Tests
             var schema = Encoding.Default.GetString(Resources.SecretMessage);
 
             var secretMessage = new SecretMessage {Message = "Hello There!"};
-            var secretMessageFieldProcessor = new SecretMessageFieldProcessor();
-            var avro = secretMessage.ToAvroRecord(schema, secretMessageFieldProcessor);
-            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customFieldProcessor: secretMessageFieldProcessor);
+            var avro = secretMessage.ToAvroRecord(schema, new SecretMessageValueGetter());
+            var secretMessageReveal =
+                avro.FromAvroRecord<SecretMessage>(customValueSetter: new SecretMessageValueSetter());
 
             // check if the message is encrypted
             Assert.AreNotEqual(Convert.ToString(avro["Message"]), secretMessage.Message);
