@@ -40,7 +40,7 @@ namespace Gooseman.Avro.Utility
 
             return (T) FromAvroRecord(avroRecord
                 , typeof(T)
-                , GetAvailableTypes(typeof(T))
+                , RegisterType(typeof(T))
                 , typeSchema
                 , customFieldProcessor);
         }
@@ -90,7 +90,7 @@ namespace Gooseman.Avro.Utility
                         {
                             case PropertyInfo pi:
                                 var propValue = FromAvroRecord(value, pi.PropertyType,
-                                    GetAvailableTypes(pi.PropertyType),
+                                    RegisterType(pi.PropertyType),
                                     field.TypeSchema, customFieldProcessor);
 
                                 pi.SetValue(instance,
@@ -101,7 +101,7 @@ namespace Gooseman.Avro.Utility
                                 break;
 
                             case FieldInfo fi:
-                                var fieldValue = FromAvroRecord(value, fi.FieldType, GetAvailableTypes(fi.FieldType),
+                                var fieldValue = FromAvroRecord(value, fi.FieldType, RegisterType(fi.FieldType),
                                     field.TypeSchema, customFieldProcessor);
 
                                 fi.SetValue(instance,
@@ -137,7 +137,8 @@ namespace Gooseman.Avro.Utility
                     var itemType = managedType.IsArray
                         ? managedType.GetElementType()
                         : managedType.GenericTypeArguments[0];
-                    var itemTypeCache = GetAvailableTypes(itemType);
+
+                    var itemTypeCache = RegisterType(itemType);
 
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
@@ -157,7 +158,8 @@ namespace Gooseman.Avro.Utility
 
                 case MapSchema mapSchema:
                     var mapItemType = managedType.GenericTypeArguments[1];
-                    var mapItemTypeCache = GetAvailableTypes(mapItemType);
+
+                    var mapItemTypeCache = RegisterType(mapItemType);
 
                     var avroMap =
                         Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), mapItemType));
@@ -209,9 +211,27 @@ namespace Gooseman.Avro.Utility
             return avroObj;
         }
 
-        private static IDictionary<string, Type> GetAvailableTypes(Type type)
+        private static readonly Dictionary<string, Type> ConcreteTypeCache = new Dictionary<string, Type>();
+        private static readonly HashSet<Type> TypeRegistry = new HashSet<Type>();
+
+        private static Dictionary<string, Type> RegisterType(Type type)
         {
-            return type.Assembly.GetTypes().ToDictionary(k => k.FullName, v => v);
+            if (TypeRegistry.Contains(type))
+                return ConcreteTypeCache;
+
+            TypeRegistry.Add(type);
+
+            if (!type.IsAbstract)
+            {
+                ConcreteTypeCache[type.FullName ?? type.Name] = type;
+            }
+
+            foreach (var t in type.Assembly.GetTypes().Where(t => !t.IsAbstract))
+            {
+                ConcreteTypeCache[t.FullName ?? t.Name] = t;
+            }
+
+            return ConcreteTypeCache;
         }
     }
 }
