@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
-//
+// 
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
@@ -65,7 +65,7 @@ namespace Gooseman.Avro.Utility
             switch (typeSchema)
             {
                 case RecordSchema recordSchema:
-                    if (managedType.IsAbstract 
+                    if (managedType.IsAbstract
                         || !managedType.IsGenericType
                         || managedType == typeof(object)
                         || managedType == typeof(AvroRecord))
@@ -88,8 +88,8 @@ namespace Gooseman.Avro.Utility
                         recordSchema.Fields.Where(f => avroRecord.Schema.TryGetField(f.Name, out _)))
                     {
                         var runtimeType = instance.GetType().GetProperty(field.Name)?.PropertyType ??
-                                           field.TypeSchema.RuntimeType;
-                            
+                                          field.TypeSchema.RuntimeType;
+
                         var value = FromAvroRecord(avroRecord[field.Name] ?? field.DefaultValue,
                             runtimeType, field.TypeSchema);
 
@@ -123,7 +123,7 @@ namespace Gooseman.Avro.Utility
                     var itemType = managedType.IsArray
                         ? managedType.GetElementType()
                         : managedType.GenericTypeArguments[0];
-                    
+
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
                     var avroListAdd = avroList.GetType().GetMethod("Add");
@@ -138,7 +138,7 @@ namespace Gooseman.Avro.Utility
 
                 case MapSchema mapSchema:
                     var mapItemType = managedType.GenericTypeArguments[1];
-                    
+
                     var avroMap =
                         Activator.CreateInstance(
                             typeof(Dictionary<,>).MakeGenericType(mapSchema.KeySchema.RuntimeType, mapItemType));

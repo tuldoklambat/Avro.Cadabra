@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
-//
+// 
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
@@ -19,7 +19,7 @@ namespace Gooseman.Avro.Utility
     public static partial class AvroCadabra
     {
         private static ICustomValueGetter _customValueGetter;
-        
+
         /// <summary>
         /// Converts an object to an Avro generic record based on the supplied schema
         /// </summary>
@@ -54,12 +54,12 @@ namespace Gooseman.Avro.Utility
             {
                 case RecordSchema recordSchema:
                     var avroRecord = new AvroRecord(recordSchema);
-                    
+
                     foreach (var field in recordSchema.Fields)
                     {
                         var value = _customValueGetter?.GetValue(obj, field.Name) ??
-                                obj.GetPropertyValue(field.Name) ?? field.DefaultValue;
-                        
+                                    obj.GetPropertyValue(field.Name) ?? field.DefaultValue;
+
                         avroRecord[field.Position] = ToAvroRecord(value, field.TypeSchema);
                     }
 

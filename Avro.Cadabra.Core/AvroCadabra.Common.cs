@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
-//
+// 
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
@@ -20,7 +20,7 @@ namespace Gooseman.Avro.Utility
 
         private static void RefreshTypeCache(Type type)
         {
-            if (TypeRegistry.Contains(type)) 
+            if (TypeRegistry.Contains(type))
                 return;
 
             TypeRegistry.Add(type);
@@ -36,7 +36,7 @@ namespace Gooseman.Avro.Utility
                 ConcreteTypeCache[t.FullName ?? t.Name] = t;
             }
         }
-        
+
         public static object GetFieldValue(
             this object obj,
             string fieldName,
