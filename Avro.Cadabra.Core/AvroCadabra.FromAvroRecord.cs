@@ -52,6 +52,11 @@ namespace Gooseman.Avro.Utility
             TypeSchema typeSchema,
             BaseCustomFieldProcessor customFieldProcessor = null)
         {
+            if (avroObj == null)
+            {
+                return null;
+            }
+
             switch (typeSchema)
             {
                 case RecordSchema recordSchema:
