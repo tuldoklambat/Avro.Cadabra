@@ -34,7 +34,8 @@ namespace Gooseman.Avro.Utility
             var typeSchema = new JsonSchemaBuilder().BuildSchema(recordSchema);
             if (typeSchema is RecordSchema)
             {
-                return (AvroRecord) ToAvroRecord(obj, typeSchema, customFieldProcessor);
+                _customFieldProcessor = customFieldProcessor;
+                return (AvroRecord) ToAvroRecord(obj, typeSchema);
             }
 
             throw new ApplicationException("Invalid record schema");
@@ -42,8 +43,7 @@ namespace Gooseman.Avro.Utility
 
         private static object ToAvroRecord(
             object obj,
-            TypeSchema typeSchema,
-            BaseCustomFieldProcessor customFieldProcessor = null)
+            TypeSchema typeSchema)
         {
             if (obj == null)
             {
@@ -56,22 +56,20 @@ namespace Gooseman.Avro.Utility
                     var avroRecord = new AvroRecord(recordSchema);
                     foreach (var field in recordSchema.Fields)
                     {
-                        var memberInfo = customFieldProcessor?.GetMatchingMemberInfo(obj.GetType(), field)
+                        var memberInfo = _customFieldProcessor?.GetMatchingMemberInfo(obj.GetType(), field)
                                          ?? obj.GetType().GetProperty(field.Name);
 
-                        var value = customFieldProcessor?.PreFieldSerialization(obj, field.Name);
+                        var value = _customFieldProcessor?.PreFieldSerialization(obj, field.Name);
                         switch (memberInfo)
                         {
                             case PropertyInfo pi:
                                 avroRecord[field.Position] = ToAvroRecord(
-                                    value ?? pi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema,
-                                    customFieldProcessor);
+                                    value ?? pi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema);
                                 
                                 break;
                             case FieldInfo fi:
                                 avroRecord[field.Position] = ToAvroRecord(
-                                    value ?? fi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema,
-                                    customFieldProcessor);
+                                    value ?? fi.GetValue(obj) ?? field.DefaultValue, field.TypeSchema);
                                 
                                 break;
                         }
@@ -106,7 +104,7 @@ namespace Gooseman.Avro.Utility
                     foreach (var value in (IEnumerable) obj)
                     {
                         avroListAdd.Invoke(avroList,
-                            new[] {ToAvroRecord(value, arraySchema.ItemSchema, customFieldProcessor)});
+                            new[] {ToAvroRecord(value, arraySchema.ItemSchema)});
                     }
 
                     return avroList.ToArray();
@@ -124,7 +122,7 @@ namespace Gooseman.Avro.Utility
                             new[]
                             {
                                 value.Key.ToString(),
-                                ToAvroRecord(value.Value, mapSchema.ValueSchema, customFieldProcessor)
+                                ToAvroRecord(value.Value, mapSchema.ValueSchema)
                             });
                     }
 
@@ -135,19 +133,17 @@ namespace Gooseman.Avro.Utility
                     {
                         var recordSchema = unionSchema.Schemas.OfType<RecordSchema>()
                             .FirstOrDefault(s => s.FullName == obj.GetType().FullName);
-                        return ToAvroRecord(obj, recordSchema, customFieldProcessor);
+                        return ToAvroRecord(obj, recordSchema);
                     }
 
                     if (unionSchema.Schemas.Any(s => s is ArraySchema))
                     {
-                        return ToAvroRecord(obj, unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault(),
-                            customFieldProcessor);
+                        return ToAvroRecord(obj, unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault());
                     }
 
                     if (unionSchema.Schemas.Any(s => s is MapSchema))
                     {
-                        return ToAvroRecord(obj, unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault(),
-                            customFieldProcessor);
+                        return ToAvroRecord(obj, unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault());
                     }
 
                     break;

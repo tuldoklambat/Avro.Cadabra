@@ -118,7 +118,7 @@ namespace Gooseman.Avro.Utility.Tests
             // convert back
             dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")?
                 .MakeGenericMethod(((object)instance).GetType())
-                .Invoke(null, new object[] { convertedInstance, schema, null });
+                .Invoke(null, new object[] { convertedInstance, schema, null, null });
 
             // compare
             Assert.AreEqual(instance.GenericInstance, target.GenericInstance);

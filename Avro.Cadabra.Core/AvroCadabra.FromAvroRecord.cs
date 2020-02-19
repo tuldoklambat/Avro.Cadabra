@@ -23,11 +23,13 @@ namespace Gooseman.Avro.Utility
         /// </summary>
         /// <param name="avroRecord"></param>
         /// <param name="recordSchema"></param>
+        /// <param name="typeCacheFilter"></param>
         /// <param name="customFieldProcessor"></param>
         /// <returns></returns>
         public static T FromAvroRecord<T>(
             this AvroRecord avroRecord,
             string recordSchema = null,
+            Func<Type, bool> typeCacheFilter = null,
             BaseCustomFieldProcessor customFieldProcessor = null) where T : class
         {
             TypeSchema typeSchema = avroRecord.Schema;
@@ -38,19 +40,20 @@ namespace Gooseman.Avro.Utility
                     throw new ApplicationException("Invalid record schema");
             }
 
+            _typeCacheFilter = typeCacheFilter;
+            _customFieldProcessor = customFieldProcessor;
+
+            RefreshTypeCache(typeof(T));
+
             return (T) FromAvroRecord(avroRecord
                 , typeof(T)
-                , RegisterType(typeof(T))
-                , typeSchema
-                , customFieldProcessor);
+                , typeSchema);
         }
 
         private static object FromAvroRecord(
             object avroObj,
             Type managedType,
-            IDictionary<string, Type> typeCache,
-            TypeSchema typeSchema,
-            BaseCustomFieldProcessor customFieldProcessor = null)
+            TypeSchema typeSchema)
         {
             if (avroObj == null)
             {
@@ -62,9 +65,10 @@ namespace Gooseman.Avro.Utility
                 case RecordSchema recordSchema:
                     if (managedType.IsAbstract)
                     {
-                        if (typeCache.ContainsKey(recordSchema.FullName))
+                        if (ConcreteTypeCache.ContainsKey(recordSchema.FullName))
                         {
-                            managedType = typeCache[recordSchema.FullName];
+                            managedType = ConcreteTypeCache[recordSchema.FullName];
+                            RefreshTypeCache(managedType);
                         }
                         else
                         {
@@ -77,7 +81,7 @@ namespace Gooseman.Avro.Utility
 
                     foreach (var field in recordSchema.Fields)
                     {
-                        var memberInfo = customFieldProcessor?.GetMatchingMemberInfo(managedType, field)
+                        var memberInfo = _customFieldProcessor?.GetMatchingMemberInfo(managedType, field)
                                          ?? instance.GetType().GetProperty(field.Name);
 
                         // skip if the record does not contain the field in the schema
@@ -89,25 +93,22 @@ namespace Gooseman.Avro.Utility
                         switch (memberInfo)
                         {
                             case PropertyInfo pi:
-                                var propValue = FromAvroRecord(value, pi.PropertyType,
-                                    RegisterType(pi.PropertyType),
-                                    field.TypeSchema, customFieldProcessor);
+                                var propValue = FromAvroRecord(value, pi.PropertyType, field.TypeSchema);
 
                                 pi.SetValue(instance,
-                                    customFieldProcessor == null
+                                    _customFieldProcessor == null
                                         ? propValue
-                                        : customFieldProcessor.PreFieldDeserialization(field.Name, propValue));
+                                        : _customFieldProcessor.PreFieldDeserialization(field.Name, propValue));
 
                                 break;
 
                             case FieldInfo fi:
-                                var fieldValue = FromAvroRecord(value, fi.FieldType, RegisterType(fi.FieldType),
-                                    field.TypeSchema, customFieldProcessor);
+                                var fieldValue = FromAvroRecord(value, fi.FieldType, field.TypeSchema);
 
                                 fi.SetValue(instance,
-                                    customFieldProcessor == null
+                                    _customFieldProcessor == null
                                         ? fieldValue
-                                        : customFieldProcessor.PreFieldDeserialization(field.Name, fieldValue));
+                                        : _customFieldProcessor.PreFieldDeserialization(field.Name, fieldValue));
 
                                 break;
                         }
@@ -138,8 +139,6 @@ namespace Gooseman.Avro.Utility
                         ? managedType.GetElementType()
                         : managedType.GenericTypeArguments[0];
 
-                    var itemTypeCache = RegisterType(itemType);
-
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
                     var avroListAdd = avroList.GetType().GetMethod("Add");
@@ -147,19 +146,13 @@ namespace Gooseman.Avro.Utility
                     foreach (var value in (IEnumerable) avroObj)
                     {
                         avroListAdd.Invoke(avroList,
-                            new[]
-                            {
-                                FromAvroRecord(value, itemType, itemTypeCache, arraySchema.ItemSchema,
-                                    customFieldProcessor)
-                            });
+                            new[] {FromAvroRecord(value, itemType, arraySchema.ItemSchema)});
                     }
 
                     return avroList.ToArray();
 
                 case MapSchema mapSchema:
                     var mapItemType = managedType.GenericTypeArguments[1];
-
-                    var mapItemTypeCache = RegisterType(mapItemType);
 
                     var avroMap =
                         Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), mapItemType));
@@ -172,8 +165,7 @@ namespace Gooseman.Avro.Utility
                             new[]
                             {
                                 value.Key.ToString(),
-                                FromAvroRecord(value.Value, mapItemType, mapItemTypeCache, mapSchema.ValueSchema,
-                                    customFieldProcessor)
+                                FromAvroRecord(value.Value, mapItemType, mapSchema.ValueSchema)
                             });
                     }
 
@@ -185,21 +177,19 @@ namespace Gooseman.Avro.Utility
                         var recordSchema = unionSchema.Schemas.OfType<RecordSchema>()
                             .FirstOrDefault(s => s.FullName == ((AvroRecord) avroObj).Schema.FullName);
 
-                        return FromAvroRecord(avroObj, managedType, typeCache, recordSchema, customFieldProcessor);
+                        return FromAvroRecord(avroObj, managedType, recordSchema);
                     }
 
                     if (unionSchema.Schemas.Any(s => s is ArraySchema))
                     {
-                        return FromAvroRecord(avroObj, managedType, typeCache,
-                            unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault(),
-                            customFieldProcessor);
+                        return FromAvroRecord(avroObj, managedType,
+                            unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault());
                     }
 
                     if (unionSchema.Schemas.Any(s => s is MapSchema))
                     {
-                        return FromAvroRecord(avroObj, managedType, typeCache,
-                            unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault(),
-                            customFieldProcessor);
+                        return FromAvroRecord(avroObj, managedType,
+                            unionSchema.Schemas.OfType<MapSchema>().FirstOrDefault());
                     }
 
                     break;
@@ -211,13 +201,16 @@ namespace Gooseman.Avro.Utility
             return avroObj;
         }
 
+        private static Func<Type, bool> _typeCacheFilter;
+        private static BaseCustomFieldProcessor _customFieldProcessor;
+
         private static readonly Dictionary<string, Type> ConcreteTypeCache = new Dictionary<string, Type>();
         private static readonly HashSet<Type> TypeRegistry = new HashSet<Type>();
 
-        private static Dictionary<string, Type> RegisterType(Type type)
+        private static void RefreshTypeCache(Type type)
         {
-            if (TypeRegistry.Contains(type))
-                return ConcreteTypeCache;
+            if (TypeRegistry.Contains(type)) 
+                return;
 
             TypeRegistry.Add(type);
 
@@ -226,12 +219,11 @@ namespace Gooseman.Avro.Utility
                 ConcreteTypeCache[type.FullName ?? type.Name] = type;
             }
 
-            foreach (var t in type.Assembly.GetTypes().Where(t => !t.IsAbstract))
+            foreach (var t in type.Assembly.GetTypes().Where(t =>
+                !t.IsAbstract && (_typeCacheFilter == null || _typeCacheFilter(t))))
             {
                 ConcreteTypeCache[t.FullName ?? t.Name] = t;
             }
-
-            return ConcreteTypeCache;
         }
     }
 }
