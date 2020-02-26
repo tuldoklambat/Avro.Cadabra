@@ -127,6 +127,12 @@
   <data name="PrimitiveTypeDefaults" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PrimitiveTypeDefaults.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="SalesRecord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SalesRecord.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SalesRecords" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SalesRecords.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="SecretMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SecretMessage.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

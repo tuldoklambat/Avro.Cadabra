@@ -4,7 +4,7 @@ A tiny library to convert a user-defined C# object to an [AvroRecord](<https://d
 
 Useful when you need to use Avro to serialize your DTOs (data transfer objects) but can't afford to or not allowed to redesign just to make it work.
 
-Another is for instances when you only want to serialize certain properties of your model which can be driven by the schema provided.
+Another is for instances when you only want to serialize certain properties of your model, which can be driven by the schema provided.
 
 ## Syntax:
 
@@ -15,7 +15,7 @@ myObject.ToAvroRecord(schema);
 // To convert an AvroRecord to an object instance
 avroRecord.FromAvroRecord<MyObjectClass>();
 
-// or if you a newer schema
+// or if you have a newer schema
 avroRecord.FromAvroRecord<MyObjectClass>(newerSchema);
 ```
 
@@ -69,16 +69,15 @@ void main()
 }
 ```
 
-## Custom Field Processor
+## Custom Field Processing
 
-For instances when you need to serialize the private state of your objects (TF?! IKR?) or do pre field processing before serializing/deserializing.
+For instances where you need to extract values from your object beyond the usual way of exposing them via public property getters when serializing, and/or assigning them back to your object via ways other than through public property setters when deserializing e.g. calling a method or assigning them to private fields using .NET reflection.
 
 ### Example:
 
 ```csharp
 
 using System;
-using System.Reflection;
 using System.Text;
 using Gooseman.Avro.Utility;
 using Microsoft.Hadoop.Avro.Schema;
@@ -89,13 +88,27 @@ namespace TestAvro
     {
         static void Main(string[] args)
         {
-            var schema = "{\"type\":\"record\",\"name\":\"TestAvro.SecretMessage\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"Message\",\"type\":\"string\"}]}";
-            var secretMessage = new SecretMessage { Message = "Hello There!" };
-            var secretMessageFieldProcessor = new SecretMessageFieldProcessor();
-            var avro = secretMessage.ToAvroRecord(schema, secretMessageFieldProcessor);
-            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customFieldProcessor: secretMessageFieldProcessor);
+            var schema = 
+                @"{
+                    ""type"": ""record"",
+                    ""name"": ""TestAvro.SecretMessage"",
+                    ""fields"": [
+                        {
+                            ""name"": ""_id"",
+                            ""type"": ""string""
+                        },
+                        {
+                            ""name"": ""Message"",
+                            ""type"": ""string""
+                        }
+                    ]
+                }";
 
-            Console.WriteLine($"Message: {secretMessage.Message}, Encrypted Message: {avro[1]}, Restored Message: {secretMessageReveal.Message}");
+            var secretMessage = new SecretMessage { Message = "Hello There!" };
+            var avro = secretMessage.ToAvroRecord(schema, new SecretMessageValueGetter());
+            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customValueSetter: new SecretMessageValueSetter());
+
+            Console.WriteLine($"Original Message: {secretMessage.Message} \r\nSent Message: {avro[1]} \r\nReceived Message: {secretMessageReveal.Message}");
             Console.ReadLine();
         }
     }
@@ -107,43 +120,49 @@ namespace TestAvro
         public string Message { get; set; }
     }
 
-    public class SecretMessageFieldProcessor : BaseCustomFieldProcessor
+    public class SecretMessageValueGetter : ICustomValueGetter
     {
-        public override MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+        public object GetValue(object managedObject, string member)
         {
-            return recordField.Name == "_id"
-                ? typeof(T).GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance)
-                : base.GetMatchingMemberInfo<T>(recordField);
-        }
-
-        public override object PreFieldSerialization<T>(T obj, string fieldName)
-        {
-            switch (fieldName)
+            switch (member)
             {
                 case "_id":
-                    var id = obj.GetFieldValue<T, Guid>(fieldName);
-                    return id;
+                    return managedObject.GetFieldValue(member);
                 case "Message":
-                    var sm = ((dynamic)obj).Message;
+                    var sm = ((dynamic) managedObject).Message;
                     return Convert.ToBase64String(Encoding.Default.GetBytes(sm));
                 default:
-                    return base.PreFieldSerialization(obj, fieldName);
+                    return null;
             }
         }
+    }
 
-        public override object PreFieldDeserialization(string fieldName, object value)
+    public class SecretMessageValueSetter : ICustomValueSetter
+    {
+        public bool SetValue(object managedObject, string member, object value)
         {
-            switch (fieldName)
+            switch (member)
             {
+                case "_id":
+                    managedObject.SetFieldValue(member, value);
+                    return true;
                 case "Message":
-                    return Encoding.Default.GetString(Convert.FromBase64String(value.ToString()));
-                default:
-                    return base.PreFieldDeserialization(fieldName, value);
+                    managedObject.SetPropertyValue(member,
+                        Encoding.Default.GetString(Convert.FromBase64String(value.ToString())));
+                    return true;
             }
+
+            return false;
         }
     }
 }
 
+```
+### Result:
+```
+Original Message: Hello There!
+Sent Message: SGVsbG8gVGhlcmUh
+Received Message: Hello There!
 ```
 
 ## Available in Nuget

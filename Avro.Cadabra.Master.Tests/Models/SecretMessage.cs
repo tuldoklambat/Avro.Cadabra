@@ -1,7 +1,13 @@
-﻿using System;
-using System.Reflection;
+﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
+// All rights reserved.
+// 
+// THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+// WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+// MERCHANTABILITY OR NON-INFRINGEMENT.
+
+using System;
 using System.Text;
-using Microsoft.Hadoop.Avro.Schema;
 
 namespace Gooseman.Avro.Utility.Tests.Models
 {
@@ -12,44 +18,39 @@ namespace Gooseman.Avro.Utility.Tests.Models
         public string Message { get; set; }
     }
 
-    public class SecretMessageFieldProcessor : BaseCustomFieldProcessor
+    public class SecretMessageValueGetter : ICustomValueGetter
     {
-        #region Overrides of BaseCustomFieldProcessor
-
-        public override MemberInfo GetMatchingMemberInfo<T>(RecordField recordField)
+        public object GetValue(object managedObject, string member)
         {
-            return recordField.Name == "_id" 
-                ? typeof(T).GetField(recordField.Name, BindingFlags.NonPublic | BindingFlags.Instance) 
-                : base.GetMatchingMemberInfo<T>(recordField);
-        }
-
-        public override object PreFieldSerialization<T>(T obj, string fieldName)
-        {
-            switch (fieldName)
+            switch (member)
             {
                 case "_id":
-                    var id = obj.GetFieldValue<T, Guid>(fieldName);
-                    return id;
+                    return managedObject.GetFieldValue(member);
                 case "Message":
-                    var sm = ((dynamic) obj).Message;
+                    var sm = ((dynamic) managedObject).Message;
                     return Convert.ToBase64String(Encoding.Default.GetBytes(sm));
                 default:
-                    return base.PreFieldSerialization(obj, fieldName);
+                    return null;
             }
         }
+    }
 
-        public override object PreFieldDeserialization(string fieldName, object value)
+    public class SecretMessageValueSetter : ICustomValueSetter
+    {
+        public bool SetValue(object managedObject, string member, object value)
         {
-            switch (fieldName)
+            switch (member)
             {
+                case "_id":
+                    managedObject.SetFieldValue(member, value);
+                    return true;
                 case "Message":
-                    return Encoding.Default.GetString(Convert.FromBase64String(value.ToString()));
-                default:
-                    return base.PreFieldDeserialization(fieldName, value);
+                    managedObject.SetPropertyValue(member,
+                        Encoding.Default.GetString(Convert.FromBase64String(value.ToString())));
+                    return true;
             }
+
+            return false;
         }
-
-        #endregion
-
     }
 }

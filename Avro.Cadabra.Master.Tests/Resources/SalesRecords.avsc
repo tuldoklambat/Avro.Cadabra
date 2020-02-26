@@ -1,0 +1,82 @@
+{
+    "name": "SalesRecords",
+    "type": "array",
+    "items": {
+        "type": "record",
+        "name": "Gooseman.Avro.Utility.Tests.Models.SalesRecord",
+      "fields": [
+        {
+          "name": "Region",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "ItemType",
+          "type": "string"
+        },
+        {
+          "name": "SalesChannel",
+          "type": {
+            "type": "enum",
+            "name": "Gooseman.Avro.Utility.Tests.Models.SalesChannelType",
+            "symbols": [
+              "Online",
+              "Offline"
+            ]
+          }
+        },
+        {
+          "name": "OrderPriority",
+          "type": {
+            "type": "enum",
+            "name": "Gooseman.Avro.Utility.Tests.Models.OrderPriorityType",
+            "symbols": [
+              "C",
+              "H",
+              "M",
+              "L"
+            ]
+          }
+        },
+        {
+          "name": "OrderDate",
+          "type": "long"
+        },
+        {
+          "name": "OrderId",
+          "type": "int"
+        },
+        {
+          "name": "ShipDate",
+          "type": "long"
+        },
+        {
+          "name": "UnitsSold",
+          "type": "int"
+        },
+        {
+          "name": "UnitPrice",
+          "type": "double"
+        },
+        {
+          "name": "UnitCost",
+          "type": "double"
+        },
+        {
+          "name": "TotalRevenue",
+          "type": "double"
+        },
+        {
+          "name": "TotalCost",
+          "type": "double"
+        },
+        {
+          "name": "TotalProfit",
+          "type": "double"
+        }
+      ]
+    }
+}

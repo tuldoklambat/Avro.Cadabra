@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Gooseman Brothers (gooseman.brothers@gmail.com)
 // All rights reserved.
-//
+// 
 // THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
 // WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
@@ -11,7 +11,6 @@ using Gooseman.Avro.Utility.Tests.Properties;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Resources;
 using System.Text;
 
 namespace Gooseman.Avro.Utility.Tests
@@ -25,7 +24,11 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<string>
                 {
                     GenericInstance = "Lorem ipsum dolor sit amet",
-                    GenericArray = new[] { "consectetur adipiscing elit", "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua" },
+                    GenericArray = new[]
+                    {
+                        "consectetur adipiscing elit",
+                        "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+                    },
                     GenericList = new List<string>
                     {
                         "Ut enim ad minim veniam",
@@ -33,8 +36,8 @@ namespace Gooseman.Avro.Utility.Tests
                     },
                     GenericMap = new Dictionary<string, string>
                     {
-                        { "1", "Duis aute irure dolor"},
-                        { "2", "in reprehenderit in voluptate" }
+                        {"1", "Duis aute irure dolor"},
+                        {"2", "in reprehenderit in voluptate"}
                     }
                 }
             },
@@ -43,9 +46,9 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<int>
                 {
                     GenericInstance = int.MaxValue,
-                    GenericArray = new[] { int.MinValue, int.MaxValue },
-                    GenericList = new List<int> { int.MinValue, int.MaxValue },
-                    GenericMap = new Dictionary<string, int> { { "1", int.MinValue }, { "2", int.MaxValue } }
+                    GenericArray = new[] {int.MinValue, int.MaxValue},
+                    GenericList = new List<int> {int.MinValue, int.MaxValue},
+                    GenericMap = new Dictionary<string, int> {{"1", int.MinValue}, {"2", int.MaxValue}}
                 }
             },
             {
@@ -53,9 +56,9 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<long>
                 {
                     GenericInstance = long.MaxValue,
-                    GenericArray = new[] { long.MinValue, long.MaxValue },
-                    GenericList = new List<long> { long.MinValue, long.MaxValue },
-                    GenericMap = new Dictionary<string, long> { { "1", long.MinValue }, { "2", long.MaxValue } }
+                    GenericArray = new[] {long.MinValue, long.MaxValue},
+                    GenericList = new List<long> {long.MinValue, long.MaxValue},
+                    GenericMap = new Dictionary<string, long> {{"1", long.MinValue}, {"2", long.MaxValue}}
                 }
             },
             {
@@ -63,9 +66,9 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<float>
                 {
                     GenericInstance = float.MaxValue,
-                    GenericArray = new[] { float.MinValue, float.MaxValue },
-                    GenericList = new List<float> { float.MinValue, float.MaxValue },
-                    GenericMap = new Dictionary<string, float> { { "1", float.MinValue }, { "2", float.MaxValue } }
+                    GenericArray = new[] {float.MinValue, float.MaxValue},
+                    GenericList = new List<float> {float.MinValue, float.MaxValue},
+                    GenericMap = new Dictionary<string, float> {{"1", float.MinValue}, {"2", float.MaxValue}}
                 }
             },
             {
@@ -73,9 +76,9 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<double>
                 {
                     GenericInstance = double.MaxValue,
-                    GenericArray = new[] { double.MinValue, double.MaxValue },
-                    GenericList = new List<double> { double.MinValue, double.MaxValue },
-                    GenericMap = new Dictionary<string, double> { { "1", double.MinValue }, { "2", double.MaxValue } }
+                    GenericArray = new[] {double.MinValue, double.MaxValue},
+                    GenericList = new List<double> {double.MinValue, double.MaxValue},
+                    GenericMap = new Dictionary<string, double> {{"1", double.MinValue}, {"2", double.MaxValue}}
                 }
             },
             {
@@ -83,9 +86,9 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<bool>
                 {
                     GenericInstance = true,
-                    GenericArray = new[] { true, false },
-                    GenericList = new List<bool> { true, false },
-                    GenericMap = new Dictionary<string, bool> { { "1", true }, { "2", false } }
+                    GenericArray = new[] {true, false},
+                    GenericList = new List<bool> {true, false},
+                    GenericMap = new Dictionary<string, bool> {{"1", true}, {"2", false}}
                 }
             },
             {
@@ -93,9 +96,10 @@ namespace Gooseman.Avro.Utility.Tests
                 new GenericType<DateTime>
                 {
                     GenericInstance = DateTime.Now,
-                    GenericArray = new[] { DateTime.Now.AddMonths(1), DateTime.Now.AddMonths(3) },
-                    GenericList = new List<DateTime> { DateTime.Now.AddMonths(1), DateTime.Now.AddMonths(3) },
-                    GenericMap = new Dictionary<string, DateTime> { { "1", DateTime.Now.AddMonths(1) }, { "2", DateTime.Now.AddMonths(3) } }
+                    GenericArray = new[] {DateTime.Now.AddMonths(1), DateTime.Now.AddMonths(3)},
+                    GenericList = new List<DateTime> {DateTime.Now.AddMonths(1), DateTime.Now.AddMonths(3)},
+                    GenericMap = new Dictionary<string, DateTime>
+                        {{"1", DateTime.Now.AddMonths(1)}, {"2", DateTime.Now.AddMonths(3)}}
                 }
             },
         };
@@ -114,12 +118,12 @@ namespace Gooseman.Avro.Utility.Tests
             var schema = Encoding.Default.GetString(Resources.GenericSchemaTemplate).Replace("{type}", avroType);
 
             // convert to AvroRecord
-            var convertedInstance = ((object)instance).ToAvroRecord(schema);
+            var convertedInstance = ((object) instance).ToAvroRecord(schema);
 
             // convert back
-            dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")
-                .MakeGenericMethod(((object)instance).GetType())
-                .Invoke(null, new object[] { convertedInstance, schema, null });
+            dynamic target = typeof(AvroCadabra).GetMethod("FromAvroRecord")?
+                .MakeGenericMethod(((object) instance).GetType())
+                .Invoke(null, new object[] {convertedInstance, schema, null, null});
 
             // compare
             Assert.AreEqual(instance.GenericInstance, target.GenericInstance);
