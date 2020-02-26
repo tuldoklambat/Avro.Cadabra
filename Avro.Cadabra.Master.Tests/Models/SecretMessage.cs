@@ -7,11 +7,7 @@
 // MERCHANTABILITY OR NON-INFRINGEMENT.
 
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Text;
-using Microsoft.Hadoop.Avro.Schema;
-using NUnit.Framework.Interfaces;
 
 namespace Gooseman.Avro.Utility.Tests.Models
 {
