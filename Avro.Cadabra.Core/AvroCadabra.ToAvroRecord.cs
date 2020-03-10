@@ -124,6 +124,13 @@ namespace Gooseman.Avro.Utility
                         return ToAvroRecord(obj, recordSchema);
                     }
 
+                    if (unionSchema.Schemas.Any(s => s is EnumSchema))
+                    {
+                        var enumSchema = unionSchema.Schemas.OfType<EnumSchema>()
+                            .FirstOrDefault(s => s.FullName == obj.GetType().FullName);
+                        return ToAvroRecord(obj, enumSchema);
+                    }
+
                     if (unionSchema.Schemas.Any(s => s is ArraySchema))
                     {
                         return ToAvroRecord(obj, unionSchema.Schemas.OfType<ArraySchema>().FirstOrDefault());
