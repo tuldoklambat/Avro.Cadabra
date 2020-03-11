@@ -81,7 +81,7 @@ namespace Gooseman.Avro.Utility
                     break;
 
                 case EnumSchema enumSchema:
-                    return new AvroEnum(enumSchema) {Value = obj.ToString()};
+                    return obj is AvroEnum ? obj : new AvroEnum(enumSchema) {Value = obj.ToString()};
 
                 case ArraySchema arraySchema:
                     dynamic avroList =

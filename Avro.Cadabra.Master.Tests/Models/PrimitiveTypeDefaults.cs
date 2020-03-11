@@ -16,5 +16,6 @@ namespace Gooseman.Avro.Utility.Tests.Models
         public float Float { get; set; }
         public double Double { get; set; }
         public string String { get; set; }
+        public BasicColor Enum { get; set; }
     }
 }

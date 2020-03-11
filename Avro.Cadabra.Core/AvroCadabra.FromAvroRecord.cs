@@ -117,6 +117,7 @@ namespace Gooseman.Avro.Utility
                     break;
 
                 case EnumSchema _:
+                    managedType = Nullable.GetUnderlyingType(managedType) ?? managedType;
                     return Enum.Parse(managedType, ((AvroEnum) avroObj).Value, true);
 
                 case ArraySchema arraySchema:
@@ -164,6 +165,14 @@ namespace Gooseman.Avro.Utility
                             .FirstOrDefault(s => s.FullName == ((AvroRecord) avroObj).Schema.FullName);
 
                         return FromAvroRecord(avroObj, managedType, recordSchema);
+                    }
+
+                    if (unionSchema.Schemas.Any(s => s is EnumSchema))
+                    {
+                        var enumSchema = unionSchema.Schemas.OfType<EnumSchema>()
+                            .FirstOrDefault(s => s.FullName == ((AvroEnum) avroObj).Schema.FullName);
+
+                        return FromAvroRecord(avroObj, managedType, enumSchema);
                     }
 
                     if (unionSchema.Schemas.Any(s => s is ArraySchema))

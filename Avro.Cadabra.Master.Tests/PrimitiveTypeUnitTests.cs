@@ -144,22 +144,51 @@ namespace Gooseman.Avro.Utility.Tests
             var restored = avro.FromAvroRecord<PrimitiveTypeDefaults>();
 
             // as expected since there's no way to tell whether a value type has been assigned
+            // because getting the value through reflection will yield the system default value for that type
+            // so solution would be to make them nullable types just like in Test_Nullable_Primitive_Types_Defaults
             Assert.AreNotEqual(restored.Boolean, true);
             Assert.AreNotEqual(restored.Int, 123);
             Assert.AreNotEqual(restored.Long, 345);
             Assert.AreNotEqual(restored.Float, 567);
             Assert.AreNotEqual(restored.Double, 789);
+            Assert.AreNotEqual(restored.Enum, BasicColor.Orange);
 
             // string on the other is a reference type which by default is null if not assigned
             Assert.AreEqual(restored.String, "Hello There!");
         }
 
         [Test]
-        public void Test_Nullable_Primitive_Types_Defaults()
+        public void Test_Nullable_Primitive_Types_With_Values()
+        {
+            var schema = Encoding.Default.GetString(Resources.NullableTypeNullDefaults);
+            var primitiveTypeDefaults = new NullableTypeDefaults
+            {
+                Boolean = false,
+                Int = int.MaxValue,
+                Double = double.MaxValue,
+                Enum = BasicColor.Indigo,
+                Float = float.MaxValue,
+                Long = long.MaxValue,
+                String = "Goodbye!"
+            };
+            var avro = primitiveTypeDefaults.ToAvroRecord(schema);
+            var restored = avro.FromAvroRecord<NullableTypeDefaults>();
+
+            Assert.AreEqual(restored.Boolean, false);
+            Assert.AreEqual(restored.Int, int.MaxValue);
+            Assert.AreEqual(restored.Long, long.MaxValue);
+            Assert.AreEqual(restored.Float, float.MaxValue);
+            Assert.AreEqual(restored.Double, double.MaxValue);
+            Assert.AreEqual(restored.Enum, BasicColor.Indigo);
+            Assert.AreEqual(restored.String, "Goodbye!");
+        }
+
+        [Test]
+        public void Test_Nullable_Primitive_Types_Defaults_With_Value_Defaults()
         {
             var schema = Encoding.Default.GetString(Resources.NullableTypeDefaults);
-            var nullableTypeDefaults = new NullableTypeDefaults();
-            var avro = nullableTypeDefaults.ToAvroRecord(schema);
+            var primitiveTypeDefaults = new NullableTypeDefaults();
+            var avro = primitiveTypeDefaults.ToAvroRecord(schema);
             var restored = avro.FromAvroRecord<NullableTypeDefaults>();
 
             Assert.AreEqual(restored.Boolean, true);
@@ -167,7 +196,25 @@ namespace Gooseman.Avro.Utility.Tests
             Assert.AreEqual(restored.Long, 345);
             Assert.AreEqual(restored.Float, 567);
             Assert.AreEqual(restored.Double, 789);
+            Assert.AreEqual(restored.Enum, BasicColor.Orange);
             Assert.AreEqual(restored.String, "Hello There!");
+        }
+
+        [Test]
+        public void Test_Nullable_Primitive_Types_Defaults_With_Null_Defaults()
+        {
+            var schema = Encoding.Default.GetString(Resources.NullableTypeNullDefaults);
+            var nullableTypeDefaults = new NullableTypeDefaults();
+            var avro = nullableTypeDefaults.ToAvroRecord(schema);
+            var restored = avro.FromAvroRecord<NullableTypeDefaults>();
+
+            Assert.AreEqual(restored.Boolean, null);
+            Assert.AreEqual(restored.Int, null);
+            Assert.AreEqual(restored.Long, null);
+            Assert.AreEqual(restored.Float, null);
+            Assert.AreEqual(restored.Double, null);
+            Assert.AreEqual(restored.String, null);
+            Assert.AreEqual(restored.Enum, null);
         }
     }
 }
