@@ -1,0 +1,56 @@
+{
+  "type": "record",
+  "name": "Gooseman.Avro.Utility.Tests.Models.NullableTypeDefaults",
+  "fields": [
+    {
+      "name": "Boolean",
+      "type": ["null", "boolean"],
+      "default": null
+    },
+    {
+      "name": "Int",
+      "type": ["null", "int"],
+      "default": null
+    },
+    {
+      "name": "Long",
+      "type": ["null", "long"],
+      "default": null
+    },
+    {
+      "name": "Float",
+      "type": ["null", "float"],
+      "default": null
+    },
+    {
+      "name": "Double",
+      "type": ["null", "double"],
+      "default": null
+    },
+    {
+      "name": "String",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "Enum",
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "Gooseman.Avro.Utility.Tests.Models.BasicColor",
+          "symbols": [
+            "Red",
+            "Orange",
+            "Yellow",
+            "Green",
+            "Blue",
+            "Indigo",
+            "Violet"
+          ]
+        }
+      ],
+      "default": null
+    }
+  ]
+}

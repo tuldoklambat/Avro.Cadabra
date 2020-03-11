@@ -31,6 +31,24 @@
       "name": "String",
       "type": "string",
       "default": "Hello There!"
+    },
+    {
+      "name": "Enum",
+      "type":
+      {
+        "type": "enum",
+        "name": "Gooseman.Avro.Utility.Tests.Models.BasicColor",
+        "symbols": [
+          "Red",
+          "Orange",
+          "Yellow",
+          "Green",
+          "Blue",
+          "Indigo",
+          "Violet"
+        ]
+      },
+      "default": "Orange"
     }
   ]
 }

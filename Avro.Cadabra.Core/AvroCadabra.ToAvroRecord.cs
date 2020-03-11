@@ -81,7 +81,7 @@ namespace Gooseman.Avro.Utility
                     break;
 
                 case EnumSchema enumSchema:
-                    return new AvroEnum(enumSchema) {Value = obj.ToString()};
+                    return obj is AvroEnum ? obj : new AvroEnum(enumSchema) {Value = obj.ToString()};
 
                 case ArraySchema arraySchema:
                     dynamic avroList =
@@ -122,6 +122,13 @@ namespace Gooseman.Avro.Utility
                         var recordSchema = unionSchema.Schemas.OfType<RecordSchema>()
                             .FirstOrDefault(s => s.FullName == obj.GetType().FullName);
                         return ToAvroRecord(obj, recordSchema);
+                    }
+
+                    if (unionSchema.Schemas.Any(s => s is EnumSchema))
+                    {
+                        var enumSchema = unionSchema.Schemas.OfType<EnumSchema>()
+                            .FirstOrDefault(s => s.FullName == obj.GetType().FullName);
+                        return ToAvroRecord(obj, enumSchema);
                     }
 
                     if (unionSchema.Schemas.Any(s => s is ArraySchema))
