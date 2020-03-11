@@ -64,7 +64,8 @@ void main()
         using var sequentialReader = new SequentialReader<object>(reader);
 
         // convert the AvroRecord to the actual instance
-        target = sequentialReader.Objects.Cast<AvroRecord>().Select(r => r.FromAvroRecord<ShapeBasket>()).FirstOrDefault();
+        target = sequentialReader.Objects.Cast<AvroRecord>()
+            .Select(r => r.FromAvroRecord<ShapeBasket>()).FirstOrDefault();
     }
 }
 ```
@@ -88,7 +89,7 @@ namespace TestAvro
     {
         static void Main(string[] args)
         {
-            var schema = 
+            var schema =
                 @"{
                     ""type"": ""record"",
                     ""name"": ""TestAvro.SecretMessage"",
@@ -106,9 +107,13 @@ namespace TestAvro
 
             var secretMessage = new SecretMessage { Message = "Hello There!" };
             var avro = secretMessage.ToAvroRecord(schema, new SecretMessageValueGetter());
-            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>(customValueSetter: new SecretMessageValueSetter());
+            var secretMessageReveal = avro.FromAvroRecord<SecretMessage>
+                (customValueSetter: new SecretMessageValueSetter());
 
-            Console.WriteLine($"Original Message: {secretMessage.Message} \r\nSent Message: {avro[1]} \r\nReceived Message: {secretMessageReveal.Message}");
+            Console.WriteLine(@$"Original Message: {secretMessage.Message} \r\n
+                Sent Message: {avro[1]} \r\n
+                Received Message: {secretMessageReveal.Message}");
+
             Console.ReadLine();
         }
     }
@@ -158,7 +163,9 @@ namespace TestAvro
 }
 
 ```
+
 ### Result:
+
 ```
 Original Message: Hello There!
 Sent Message: SGVsbG8gVGhlcmUh
