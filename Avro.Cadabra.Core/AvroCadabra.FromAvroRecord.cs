@@ -123,7 +123,9 @@ namespace Gooseman.Avro.Utility
                 case ArraySchema arraySchema:
                     var itemType = managedType.IsArray
                         ? managedType.GetElementType()
-                        : managedType.GenericTypeArguments[0];
+                        : managedType.IsGenericType
+                            ? managedType.GenericTypeArguments[0]
+                            : typeof(object);
 
                     dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
@@ -138,7 +140,9 @@ namespace Gooseman.Avro.Utility
                     return avroList.ToArray();
 
                 case MapSchema mapSchema:
-                    var mapItemType = managedType.GenericTypeArguments[1];
+                    var mapItemType = managedType.IsGenericType
+                        ? managedType.GenericTypeArguments[1]
+                        : typeof(object);
 
                     var avroMap =
                         Activator.CreateInstance(
