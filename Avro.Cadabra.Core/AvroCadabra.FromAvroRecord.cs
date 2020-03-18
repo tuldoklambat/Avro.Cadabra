@@ -84,6 +84,8 @@ namespace Gooseman.Avro.Utility
                     var avroRecord = (AvroRecord) avroObj;
                     var instance = Activator.CreateInstance(managedType);
 
+                    // the Where clause here ensures the field in the new schema (if provided) matches a field
+                    // in the previous embedded schema
                     foreach (var field in
                         recordSchema.Fields.Where(f => avroRecord.Schema.TryGetField(f.Name, out _)))
                     {
@@ -127,17 +129,18 @@ namespace Gooseman.Avro.Utility
                             ? managedType.GenericTypeArguments[0]
                             : typeof(object);
 
-                    dynamic avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
+                    var avroList = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
 
                     var avroListAdd = avroList.GetType().GetMethod("Add");
+                    var avroListToArray = avroList.GetType().GetMethod(("ToArray"));
 
-                    foreach (var value in (IEnumerable) avroObj)
+                    foreach (var value in (IEnumerable)avroObj)
                     {
-                        avroListAdd.Invoke(avroList,
-                            new[] {FromAvroRecord(value, itemType, arraySchema.ItemSchema)});
+                        avroListAdd?.Invoke(avroList,
+                            new[] { FromAvroRecord(value, itemType, arraySchema.ItemSchema) });
                     }
 
-                    return avroList.ToArray();
+                    return avroListToArray?.Invoke(avroList, null);
 
                 case MapSchema mapSchema:
                     var mapItemType = managedType.IsGenericType

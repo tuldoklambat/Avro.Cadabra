@@ -84,34 +84,15 @@ namespace Gooseman.Avro.Utility
                     return obj is AvroEnum ? obj : new AvroEnum(enumSchema) {Value = obj.ToString()};
 
                 case ArraySchema arraySchema:
-                    dynamic avroList =
-                        Activator.CreateInstance(typeof(List<>).MakeGenericType(arraySchema.ItemSchema.RuntimeType));
-
-                    var avroListAdd = avroList.GetType().GetMethod("Add");
-
-                    foreach (var value in (IEnumerable) obj)
-                    {
-                        avroListAdd.Invoke(avroList,
-                            new[] {ToAvroRecord(value, arraySchema.ItemSchema)});
-                    }
-
-                    return avroList.ToArray();
+                    return (from object value in (IEnumerable) obj 
+                        select ToAvroRecord(value, arraySchema.ItemSchema)).ToArray();
 
                 case MapSchema mapSchema:
-                    var avroMap = Activator.CreateInstance(
-                        typeof(Dictionary<,>).MakeGenericType(mapSchema.KeySchema.RuntimeType,
-                            mapSchema.ValueSchema.RuntimeType));
+                    var avroMap = new Dictionary<string, object>();
 
-                    var avroMapAdd = avroMap.GetType().GetMethod("Add");
-
-                    foreach (DictionaryEntry value in (IDictionary) obj)
+                    foreach (DictionaryEntry value in (IDictionary)obj)
                     {
-                        avroMapAdd?.Invoke(avroMap,
-                            new[]
-                            {
-                                value.Key.ToString(),
-                                ToAvroRecord(value.Value, mapSchema.ValueSchema)
-                            });
+                        avroMap.Add(value.Key.ToString(), ToAvroRecord(value.Value, mapSchema.ValueSchema));
                     }
 
                     return avroMap;
