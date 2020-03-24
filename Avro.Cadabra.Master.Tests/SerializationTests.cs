@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Gooseman.Avro.Utility.Tests.Models;
 using Gooseman.Avro.Utility.Tests.Properties;
 using Microsoft.Hadoop.Avro;
@@ -21,10 +20,12 @@ namespace Gooseman.Avro.Utility.Tests
 {
     public class SerializationTests
     {
+        [TestCase(true, Description = "Test Serialization To File With Schema")]
+        [TestCase(false, Description = "Test Serialization To File Without Schema")]
         [Test]
-        public void Test_Serialization()
+        public void Test_Serialization(bool withSchema)
         {
-            var schema = Encoding.Default.GetString(Resources.SalesRecord);
+            var schema = Resources.SalesRecord;
             var avroFile = Path.ChangeExtension(Path.GetTempFileName(), "avro");
 
             using (var fs = new FileStream(avroFile, FileMode.Create))
@@ -53,7 +54,7 @@ namespace Gooseman.Avro.Utility.Tests
                         TotalCost = double.Parse(fields[12]),
                         TotalProfit = double.Parse(fields[13])
                     };
-                    sequentialWriter.Write(salesRecord.ToAvroRecord(schema));
+                    sequentialWriter.Write(withSchema ? salesRecord.ToAvroRecord(schema) : salesRecord.ToAvroRecord());
                 }
             }
 
@@ -64,7 +65,7 @@ namespace Gooseman.Avro.Utility.Tests
             using (var sequentialReader = new SequentialReader<object>(reader))
             {
                 salesRecords.AddRange(sequentialReader.Objects.Cast<AvroRecord>()
-                    .Select(o => o.FromAvroRecord<SalesRecord>(schema)));
+                    .Select(o => withSchema ? o.FromAvroRecord<SalesRecord>(schema) : o.FromAvroRecord<SalesRecord>()));
             }
 
             File.Delete(avroFile);

@@ -16,14 +16,14 @@ namespace Gooseman.Avro.Utility
     public static partial class AvroCadabra
     {
         private static readonly Dictionary<string, Type> ConcreteTypeCache = new Dictionary<string, Type>();
-        private static readonly HashSet<Type> TypeRegistry = new HashSet<Type>();
+        private static readonly HashSet<string> AssemblyRegistry = new HashSet<string>();
 
         private static void RefreshTypeCache(Type type)
         {
-            if (TypeRegistry.Contains(type))
+            if (AssemblyRegistry.Contains(type.Assembly.FullName))
                 return;
 
-            TypeRegistry.Add(type);
+            AssemblyRegistry.Add(type.Assembly.FullName);
 
             if (!type.IsAbstract)
             {

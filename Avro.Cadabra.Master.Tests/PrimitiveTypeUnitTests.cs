@@ -11,7 +11,6 @@ using Gooseman.Avro.Utility.Tests.Properties;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Gooseman.Avro.Utility.Tests
 {
@@ -104,18 +103,25 @@ namespace Gooseman.Avro.Utility.Tests
             },
         };
 
-        [TestCase(typeof(string), "string", TestName = "String Conversion Test")]
-        [TestCase(typeof(int), "int", TestName = "Integer Conversion Test")]
-        [TestCase(typeof(long), "long", TestName = "Long Conversion Test")]
-        [TestCase(typeof(float), "float", TestName = "Float Conversion Test")]
-        [TestCase(typeof(double), "double", TestName = "Double Conversion Test")]
-        [TestCase(typeof(bool), "boolean", TestName = "Boolean Conversion Test")]
-        [TestCase(typeof(DateTime), "long", TestName = "DateTime Conversion Test")]
+        [TestCase(typeof(string), "string", true, TestName = "String Conversion Test With Schema")]
+        [TestCase(typeof(int), "int", true, TestName = "Integer Conversion Test With Schema")]
+        [TestCase(typeof(long), "long", true, TestName = "Long Conversion Test With Schema")]
+        [TestCase(typeof(float), "float", true, TestName = "Float Conversion Test With Schema")]
+        [TestCase(typeof(double), "double", true, TestName = "Double Conversion Test With Schema")]
+        [TestCase(typeof(bool), "boolean", true, TestName = "Boolean Conversion Test With Schema")]
+        [TestCase(typeof(DateTime), "long", true, TestName = "DateTime Conversion Test With Schema")]
+        [TestCase(typeof(string), "string", false, TestName = "String Conversion Test With Schema")]
+        [TestCase(typeof(int), "int", false, TestName = "Integer Conversion Test Without Schema")]
+        [TestCase(typeof(long), "long", false, TestName = "Long Conversion Test Without Schema")]
+        [TestCase(typeof(float), "float", false, TestName = "Float Conversion Test Without Schema")]
+        [TestCase(typeof(double), "double", false, TestName = "Double Conversion Test Without Schema")]
+        [TestCase(typeof(bool), "boolean", false, TestName = "Boolean Conversion Test Without Schema")]
+        [TestCase(typeof(DateTime), "long", false, TestName = "DateTime Conversion Test Without Schema")]
         [Test]
-        public void Test_PrimitiveTypes_Conversion(Type type, string avroType)
+        public void Test_PrimitiveTypes_Conversion(Type type, string avroType, bool withSchema)
         {
             dynamic instance = _primitiveTypeModels[type];
-            var schema = Encoding.Default.GetString(Resources.GenericSchemaTemplate).Replace("{type}", avroType);
+            var schema = Resources.GenericSchemaTemplate.Replace("{type}", avroType);
 
             // convert to AvroRecord
             var convertedInstance = ((object) instance).ToAvroRecord(schema);
@@ -138,7 +144,7 @@ namespace Gooseman.Avro.Utility.Tests
         [Test]
         public void Test_Primitive_Types_Defaults()
         {
-            var schema = Encoding.Default.GetString(Resources.PrimitiveTypeDefaults);
+            var schema = Resources.PrimitiveTypeDefaults;
             var primitiveTypeDefaults = new PrimitiveTypeDefaults();
             var avro = primitiveTypeDefaults.ToAvroRecord(schema);
             var restored = avro.FromAvroRecord<PrimitiveTypeDefaults>();
@@ -160,7 +166,7 @@ namespace Gooseman.Avro.Utility.Tests
         [Test]
         public void Test_Nullable_Primitive_Types_With_Values()
         {
-            var schema = Encoding.Default.GetString(Resources.NullableTypeNullDefaults);
+            var schema = Resources.NullableTypeNullDefaults;
             var primitiveTypeDefaults = new NullableTypeDefaults
             {
                 Boolean = false,
@@ -186,7 +192,7 @@ namespace Gooseman.Avro.Utility.Tests
         [Test]
         public void Test_Nullable_Primitive_Types_Defaults_With_Value_Defaults()
         {
-            var schema = Encoding.Default.GetString(Resources.NullableTypeDefaults);
+            var schema = Resources.NullableTypeDefaults;
             var primitiveTypeDefaults = new NullableTypeDefaults();
             var avro = primitiveTypeDefaults.ToAvroRecord(schema);
             var restored = avro.FromAvroRecord<NullableTypeDefaults>();
@@ -203,7 +209,7 @@ namespace Gooseman.Avro.Utility.Tests
         [Test]
         public void Test_Nullable_Primitive_Types_Defaults_With_Null_Defaults()
         {
-            var schema = Encoding.Default.GetString(Resources.NullableTypeNullDefaults);
+            var schema = Resources.NullableTypeNullDefaults;
             var nullableTypeDefaults = new NullableTypeDefaults();
             var avro = nullableTypeDefaults.ToAvroRecord(schema);
             var restored = avro.FromAvroRecord<NullableTypeDefaults>();
