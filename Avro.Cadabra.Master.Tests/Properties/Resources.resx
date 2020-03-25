@@ -119,33 +119,33 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="GenericSchemaTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GenericSchemaTemplate.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\GenericSchemaTemplate.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="NullableTypeDefaults" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NullableTypeDefaults.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\NullableTypeDefaults.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="NullableTypeNullDefaults" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NullableTypeNullDefaults.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\NullableTypeNullDefaults.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="PrimitiveTypeDefaults" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PrimitiveTypeDefaults.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\PrimitiveTypeDefaults.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="SalesRecord" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SalesRecord.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\SalesRecord.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="SalesRecords" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SalesRecords.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\SalesRecords.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="SecretMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SecretMessage.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\SecretMessage.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="ShapeBasket_v1_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ShapeBasket.v1.0.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\ShapeBasket.v1.0.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="ShapeBasket_v2_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ShapeBasket.v2.0.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\ShapeBasket.v2.0.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="TradeRequest" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TradeRequest.avsc;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\TradeRequest.avsc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

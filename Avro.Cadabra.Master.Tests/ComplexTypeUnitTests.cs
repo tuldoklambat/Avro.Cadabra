@@ -15,15 +15,16 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Gooseman.Avro.Utility.Tests.Models.Complex;
 
 namespace Gooseman.Avro.Utility.Tests
 {
     public class ComplexTypeUnitTests
     {
+        [TestCase(true, Description = "Complex Type Conversion With Schema")]
+        [TestCase(false, Description = "Complex Type Conversion Without Schema")]
         [Test]
-        public void Test_ComplexType_Conversion()
+        public void Test_ComplexType_Conversion(bool withSchema)
         {
             dynamic instance = new ShapeBasket
             {
@@ -43,11 +44,15 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schema = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
+            var schema = Resources.ShapeBasket_v1_0;
 
-            var convertedInstance = ((object) instance).ToAvroRecord(schema);
+            var convertedInstance = withSchema
+                ? ((object) instance).ToAvroRecord(schema)
+                : ((object) instance).ToAvroRecord();
 
-            dynamic target = convertedInstance.FromAvroRecord<ShapeBasket>(schema);
+            dynamic target = withSchema
+                ? convertedInstance.FromAvroRecord<ShapeBasket>(schema)
+                : convertedInstance.FromAvroRecord<ShapeBasket>();
 
             Assert.AreEqual(instance.Shapes[0].Name, target.Shapes[0].Name);
 
@@ -94,8 +99,8 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schemaV1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
-            var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
+            var schemaV1 = Resources.ShapeBasket_v1_0;
+            var schemaV2 = Resources.ShapeBasket_v2_0;
 
             // encode using v1 schema
             var convertedInstance = ((object) instance).ToAvroRecord(schemaV1);
@@ -155,8 +160,8 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schemaV1 = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
-            var schemaV2 = Encoding.Default.GetString(Resources.ShapeBasket_v2_0);
+            var schemaV1 = Resources.ShapeBasket_v1_0;
+            var schemaV2 = Resources.ShapeBasket_v2_0;
 
             // encode using v2 schema
             var convertedInstance = ((object) instance).ToAvroRecord(schemaV2);
@@ -215,7 +220,7 @@ namespace Gooseman.Avro.Utility.Tests
                 }
             };
 
-            var schema = Encoding.Default.GetString(Resources.ShapeBasket_v1_0);
+            var schema = Resources.ShapeBasket_v1_0;
             var avroFile = Path.GetTempFileName();
 
             // serialize
@@ -275,7 +280,7 @@ namespace Gooseman.Avro.Utility.Tests
              retrieving the property value
              */
 
-            var schema = Encoding.Default.GetString(Resources.TradeRequest);
+            var schema = Resources.TradeRequest;
 
             var trade = new Vanilla();
             var tenor = new Tenor(3);
@@ -307,7 +312,7 @@ namespace Gooseman.Avro.Utility.Tests
         [Test]
         public void Test_Another_Custom_Field_Processor()
         {
-            var schema = Encoding.Default.GetString(Resources.SecretMessage);
+            var schema = Resources.SecretMessage;
 
             var secretMessage = new SecretMessage {Message = "Hello There!"};
             var avro = secretMessage.ToAvroRecord(schema, new SecretMessageValueGetter());

@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Gooseman.Avro.Utility
 {
@@ -38,7 +37,29 @@ namespace Gooseman.Avro.Utility
                 throw new ApplicationException("Invalid record schema");
 
             _customValueGetter = customValueGetter;
+
             return (AvroRecord) ToAvroRecord(obj, typeSchema);
+        }
+
+        /// <summary>
+        /// Converts an object to Avro generic record using reflection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="customValueGetter"></param>
+        /// <returns></returns>
+        public static AvroRecord ToAvroRecord<T>(
+            this T obj,
+            ICustomValueGetter customValueGetter = null) where T : class
+        {
+            if (obj == null)
+            {
+                return null;
+            }
+
+            _customValueGetter = customValueGetter;
+
+            return (AvroRecord) ToAvroRecord(obj, obj.GetType().GetAvroSchema());
         }
 
         private static object ToAvroRecord(

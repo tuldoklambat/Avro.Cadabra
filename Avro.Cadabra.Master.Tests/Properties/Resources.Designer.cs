@@ -61,102 +61,306 @@ namespace Gooseman.Avro.Utility.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.GenericType&quot;,
+        ///  &quot;aliases&quot;: [ &quot;Gooseman.Avro.Utility.Tests.Models.GenericType`1&quot; ],
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;GenericInstance&quot;,
+        ///      &quot;type&quot;: &quot;{type}&quot;
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;GenericArray&quot;,
+        ///      &quot;type&quot;: {
+        ///        &quot;type&quot;: &quot;array&quot;,
+        ///        &quot;items&quot;: &quot;{type}&quot;
+        ///      }
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;GenericList&quot;,
+        ///      &quot;type&quot;: [
+        ///        {
+        ///          &quot;type&quot;: &quot;array&quot;,
+        ///          &quot;items&quot;: &quot;{type}&quot;
+        ///        }
+        ///      ]
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] GenericSchemaTemplate {
+        internal static string GenericSchemaTemplate {
             get {
-                object obj = ResourceManager.GetObject("GenericSchemaTemplate", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("GenericSchemaTemplate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.NullableTypeDefaults&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Boolean&quot;,
+        ///      &quot;type&quot;: &quot;boolean&quot;,
+        ///      &quot;default&quot;: true
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Int&quot;,
+        ///      &quot;type&quot;: &quot;int&quot;,
+        ///      &quot;default&quot;: 123
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Long&quot;,
+        ///      &quot;type&quot;: &quot;long&quot;,
+        ///      &quot;default&quot;: 345
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Float&quot;,
+        ///      &quot;type&quot;: &quot;float&quot;,
+        ///      &quot;default&quot;: 567
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Double&quot;,
+        ///      &quot;type&quot;: &quot;double&quot;,
+        ///      &quot; [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] NullableTypeDefaults {
+        internal static string NullableTypeDefaults {
             get {
-                object obj = ResourceManager.GetObject("NullableTypeDefaults", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("NullableTypeDefaults", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.NullableTypeDefaults&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Boolean&quot;,
+        ///      &quot;type&quot;: [&quot;null&quot;, &quot;boolean&quot;],
+        ///      &quot;default&quot;: null
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Int&quot;,
+        ///      &quot;type&quot;: [&quot;null&quot;, &quot;int&quot;],
+        ///      &quot;default&quot;: null
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Long&quot;,
+        ///      &quot;type&quot;: [&quot;null&quot;, &quot;long&quot;],
+        ///      &quot;default&quot;: null
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Float&quot;,
+        ///      &quot;type&quot;: [&quot;null&quot;, &quot;float&quot;],
+        ///      &quot;default&quot;: null
+        ///    },
+        ///    {
+        ///      &quot;name&quot;:  [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] NullableTypeNullDefaults {
+        internal static string NullableTypeNullDefaults {
             get {
-                object obj = ResourceManager.GetObject("NullableTypeNullDefaults", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("NullableTypeNullDefaults", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.PrimitiveTypeDefaults&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Boolean&quot;,
+        ///      &quot;type&quot;: &quot;boolean&quot;,
+        ///      &quot;default&quot;: true
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Int&quot;,
+        ///      &quot;type&quot;: &quot;int&quot;,
+        ///      &quot;default&quot;: 123
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Long&quot;,
+        ///      &quot;type&quot;: &quot;long&quot;,
+        ///      &quot;default&quot;: 345
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Float&quot;,
+        ///      &quot;type&quot;: &quot;float&quot;,
+        ///      &quot;default&quot;: 567
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Double&quot;,
+        ///      &quot;type&quot;: &quot;double&quot;,
+        ///       [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] PrimitiveTypeDefaults {
+        internal static string PrimitiveTypeDefaults {
             get {
-                object obj = ResourceManager.GetObject("PrimitiveTypeDefaults", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("PrimitiveTypeDefaults", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///    &quot;type&quot;: &quot;record&quot;,
+        ///    &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.SalesRecord&quot;,
+        ///    &quot;fields&quot;: [
+        ///        {
+        ///            &quot;name&quot;: &quot;Region&quot;,
+        ///            &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///            &quot;name&quot;: &quot;Country&quot;,
+        ///            &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///            &quot;name&quot;: &quot;ItemType&quot;,
+        ///            &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///            &quot;name&quot;: &quot;SalesChannel&quot;,
+        ///            &quot;type&quot;: {
+        ///                &quot;type&quot;: &quot;enum&quot;,
+        ///                &quot;name&quot;: &quot;Gooseman.Avro.Utility. [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] SalesRecord {
+        internal static string SalesRecord {
             get {
-                object obj = ResourceManager.GetObject("SalesRecord", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("SalesRecord", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///    &quot;name&quot;: &quot;SalesRecords&quot;,
+        ///    &quot;type&quot;: &quot;array&quot;,
+        ///    &quot;items&quot;: {
+        ///        &quot;type&quot;: &quot;record&quot;,
+        ///        &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.SalesRecord&quot;,
+        ///      &quot;fields&quot;: [
+        ///        {
+        ///          &quot;name&quot;: &quot;Region&quot;,
+        ///          &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///          &quot;name&quot;: &quot;Country&quot;,
+        ///          &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///          &quot;name&quot;: &quot;ItemType&quot;,
+        ///          &quot;type&quot;: &quot;string&quot;
+        ///        },
+        ///        {
+        ///          &quot;name&quot;: &quot;SalesChannel&quot;,
+        ///          &quot;type&quot;: {
+        ///            &quot;type&quot;: [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] SalesRecords {
+        internal static string SalesRecords {
             get {
-                object obj = ResourceManager.GetObject("SalesRecords", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("SalesRecords", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.SecretMessage&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;_id&quot;,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    },
+        ///    {
+        ///      &quot;name&quot;: &quot;Message&quot;,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    }
+        ///  ]
+        ///}.
         /// </summary>
-        internal static byte[] SecretMessage {
+        internal static string SecretMessage {
             get {
-                object obj = ResourceManager.GetObject("SecretMessage", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("SecretMessage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.ShapeBasket&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Shapes&quot;,
+        ///      &quot;type&quot;: [
+        ///        {
+        ///          &quot;type&quot;: &quot;array&quot;,
+        ///          &quot;items&quot;: [
+        ///            {
+        ///              &quot;type&quot;: &quot;record&quot;,
+        ///              &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.Circle&quot;,
+        ///              &quot;fields&quot;: [
+        ///                {
+        ///                  &quot;name&quot;: &quot;Name&quot;,
+        ///                  &quot;type&quot;: [&quot;null&quot;, &quot;string&quot;]
+        ///                },
+        ///                {
+        ///                  &quot;n [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] ShapeBasket_v1_0 {
+        internal static string ShapeBasket_v1_0 {
             get {
-                object obj = ResourceManager.GetObject("ShapeBasket_v1_0", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("ShapeBasket_v1_0", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.ShapeBasket&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Shapes&quot;,
+        ///      &quot;type&quot;: [
+        ///        {
+        ///          &quot;type&quot;: &quot;array&quot;,
+        ///          &quot;items&quot;: [
+        ///            {
+        ///              &quot;type&quot;: &quot;record&quot;,
+        ///              &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.Circle&quot;,
+        ///              &quot;fields&quot;: [
+        ///                {
+        ///                  &quot;name&quot;: &quot;Name&quot;,
+        ///                  &quot;type&quot;: [ &quot;null&quot;, &quot;string&quot; ]
+        ///                },
+        ///                {
+        ///                   [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] ShapeBasket_v2_0 {
+        internal static string ShapeBasket_v2_0 {
             get {
-                object obj = ResourceManager.GetObject("ShapeBasket_v2_0", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("ShapeBasket_v2_0", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;record&quot;,
+        ///  &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.Complex.TradeRequest&quot;,
+        ///  &quot;fields&quot;: [
+        ///    {
+        ///      &quot;name&quot;: &quot;Trade&quot;,
+        ///      &quot;type&quot;: {
+        ///        &quot;type&quot;: &quot;record&quot;,
+        ///        &quot;name&quot;: &quot;Gooseman.Avro.Utility.Tests.Models.Complex.Vanilla&quot;,
+        ///        &quot;fields&quot;: [
+        ///          {
+        ///            &quot;name&quot;: &quot;ExpiryDate&quot;,
+        ///            &quot;type&quot;: &quot;long&quot;
+        ///          },
+        ///          {
+        ///            &quot;name&quot;: &quot;_tenor&quot;,
+        ///            &quot;type&quot;: {
+        ///              &quot;type&quot;: &quot;record&quot;,
+        ///              &quot;name&quot;: &quot;Gooseman.Avro.Utility.T [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] TradeRequest {
+        internal static string TradeRequest {
             get {
-                object obj = ResourceManager.GetObject("TradeRequest", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("TradeRequest", resourceCulture);
             }
         }
     }
