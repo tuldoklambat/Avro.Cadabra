@@ -120,7 +120,7 @@ public class Circle : IShape
 
 ### Result:
 
-<img src="https://raw.githubusercontent.com/tuldoklambat/Avro.Cadabra/master/Capture.PNG" width=900>
+![](https://raw.githubusercontent.com/tuldoklambat/Avro.Cadabra/master/Capture.PNG)
 
 ## Custom Field Processing
 
