@@ -70,6 +70,58 @@ void main()
 }
 ```
 
+## No Schema Serialization
+
+Having an explicitly written schema offers more flexibility and gives you more control when serializing in Avro but if you have no special requirements and your types are simple and straightforward you can let ToAvroRecord infer the schema through reflection and serialize your objects.
+
+### Example (Ran in LINQPad):
+
+```csharp
+void Main()
+{
+	var instance = new ShapeBasket
+	{
+		Shapes = new List<IShape>
+				{
+					new Circle(),
+					new Circle {Name = "Red Dot", Radius = 15},
+					new Square {Name = "Blue Square", Width = 20}
+				}
+	};
+
+	var record = instance.ToAvroRecord();
+
+	record.FromAvroRecord<ShapeBasket>().Dump();
+	typeof(ShapeBasket).GetAvroSchema().ToString().Dump();
+}
+
+public class ShapeBasket
+{
+	public IList<IShape> Shapes { get; set; }
+}
+
+public interface IShape
+{
+	string Name { get; set; }
+}
+
+public class Square : IShape
+{
+	public string Name { get; set; }
+	public double Width { get; set; }
+}
+
+public class Circle : IShape
+{
+	public string Name { get; set; }
+	public double Radius { get; set; }
+}
+```
+
+### Result:
+
+<img src="Capture.png" width=800>
+
 ## Custom Field Processing
 
 For instances where you need to extract values from your object beyond the usual way of exposing them via public property getters when serializing, and/or assigning them back to your object via ways other than through public property setters when deserializing e.g. calling a method or assigning them to private fields using .NET reflection.

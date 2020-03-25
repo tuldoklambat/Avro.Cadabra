@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Gooseman.Avro.Utility
 {
@@ -38,6 +37,7 @@ namespace Gooseman.Avro.Utility
                 throw new ApplicationException("Invalid record schema");
 
             _customValueGetter = customValueGetter;
+
             return (AvroRecord) ToAvroRecord(obj, typeSchema);
         }
 
@@ -57,20 +57,9 @@ namespace Gooseman.Avro.Utility
                 return null;
             }
 
-            var type = obj.GetType();
-            RefreshTypeCache(type);
+            _customValueGetter = customValueGetter;
 
-            var settings = new AvroSerializerSettings
-            {
-                Resolver = new AvroPublicMemberContractResolver(),
-                Surrogate = new CustomSurrogate(),
-                KnownTypes = ConcreteTypeCache.Values
-            };
-            var methodInfo = typeof(AvroSerializer).GetMethod("Create", BindingFlags.Static | BindingFlags.Public, null,
-                new Type[] {typeof(AvroSerializerSettings)}, null);
-            var avroSerializer = methodInfo?.MakeGenericMethod(type).Invoke(null, new object[] {settings});
-            var writerSchema = (TypeSchema) avroSerializer.GetPropertyValue("WriterSchema");
-            return ToAvroRecord(obj, writerSchema.ToString(), customValueGetter);
+            return (AvroRecord) ToAvroRecord(obj, obj.GetType().GetAvroSchema());
         }
 
         private static object ToAvroRecord(
@@ -180,35 +169,6 @@ namespace Gooseman.Avro.Utility
             }
 
             return obj;
-        }
-
-        private class CustomSurrogate : IAvroSurrogate
-        {
-            public Type GetSurrogateType(Type type)
-            {
-                if (((TypeInfo) type).ImplementedInterfaces.Contains(typeof(IEnumerable)))
-                {
-                    switch (type.GenericTypeArguments.Length)
-                    {
-                        case 2:
-                            return typeof(Dictionary<,>).MakeGenericType(type.GenericTypeArguments);
-                        case 1:
-                            return typeof(List<>).MakeGenericType(type.GenericTypeArguments);
-                    }
-                }
-
-                return type;
-            }
-
-            public object GetDeserializedObject(object obj, Type targetType)
-            {
-                return obj;
-            }
-
-            public object GetObjectToSerialize(object obj, Type targetType)
-            {
-                return obj;
-            }
         }
     }
 }
